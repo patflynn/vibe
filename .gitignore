@@ -1,0 +1,31 @@
+# Android Studio generated files
+.gradle/
+.idea/
+*.iml
+
+# Build directories
+/app/build/
+/build/
+/app/outputs/
+
+# Local properties
+local.properties
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+hs_err_pid*.log
+
+# Other temporary files
+*.hprof
+captures/
+
+#User settings
+.aiexclude/
+.settings/
+
+#Generated files
+gradle-wrapper.properties

@@ -1,4 +1,4 @@
-package com.patflynn.vibe
+package dev.broken.app.vibe
 
 import android.content.Context
 import android.media.MediaPlayer
@@ -6,10 +6,9 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import com.patflynn.vibe.databinding.ActivityMainBinding
+import dev.broken.app.vibe.databinding.ActivityMainBinding
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
@@ -117,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer?.release()
         
         // Create and prepare a new MediaPlayer
-        mediaPlayer = MediaPlayer.create(this, R.raw.meditation_bell)
+        mediaPlayer = MediaPlayer.create(this, R.raw.med_bell)
         mediaPlayer?.start()
         
         // Also vibrate the device gently

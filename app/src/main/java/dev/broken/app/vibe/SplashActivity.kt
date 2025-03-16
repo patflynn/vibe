@@ -1,4 +1,4 @@
-package com.patflynn.vibe
+package dev.broken.app.vibe
 
 import android.content.Intent
 import android.os.Bundle

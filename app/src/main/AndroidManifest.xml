@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.patflynn.vibe">
+    package="dev.broken.app.vibe">
     
     <!-- Vibration permission -->
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Vibe">
         <activity
-            android:name=".SplashActivity"
+            android:name="dev.broken.app.vibe.SplashActivity"
             android:exported="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -23,9 +23,8 @@
         </activity>
         
         <activity
-            android:name=".MainActivity"
+            android:name="dev.broken.app.vibe.MainActivity"
             android:exported="false"
-            android:screenOrientation="portrait"
             android:keepScreenOn="true"/> <!-- Keeps screen on during meditation -->
     </application>
 
