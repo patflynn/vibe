@@ -10,6 +10,12 @@ An ultra simple, free meditation app for Android.
 - Keeps screen active during meditation
 - Minimal permissions required
 
+## Download
+
+You can download the latest APK directly from the [GitHub Releases](https://github.com/patflynn/vibe/releases) page.
+
+Each merge to the main branch automatically creates a new release with a timestamped version and downloadable APK.
+
 ## Development Setup
 
 1. Clone the repository
@@ -32,3 +38,8 @@ An ultra simple, free meditation app for Android.
 ## CI Status
 
 [![Android CI](https://github.com/patflynn/vibe/actions/workflows/android-ci.yml/badge.svg)](https://github.com/patflynn/vibe/actions/workflows/android-ci.yml)
+
+The CI pipeline:
+- Builds and tests the app on every push and pull request
+- Creates a downloadable APK artifact for every build
+- Automatically publishes a new GitHub Release with the APK for merges to master
