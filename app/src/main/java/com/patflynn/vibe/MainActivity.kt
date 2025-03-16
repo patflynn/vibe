@@ -1,8 +1,11 @@
 package com.patflynn.vibe
 
+import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
@@ -116,6 +119,14 @@ class MainActivity : AppCompatActivity() {
         // Create and prepare a new MediaPlayer
         mediaPlayer = MediaPlayer.create(this, R.raw.meditation_bell)
         mediaPlayer?.start()
+        
+        // Also vibrate the device gently
+        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (vibrator.hasVibrator()) {
+            // Create a gentle vibration pattern - 500ms vibration, 200ms pause, 500ms vibration
+            val vibrationPattern = longArrayOf(0, 500, 200, 500)
+            vibrator.vibrate(VibrationEffect.createWaveform(vibrationPattern, -1))
+        }
     }
 
     override fun onDestroy() {
