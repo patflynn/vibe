@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace 'dev.broken.app.vibe'
     compileSdkVersion 34
     defaultConfig {
         applicationId "com.patflynn.vibe"
