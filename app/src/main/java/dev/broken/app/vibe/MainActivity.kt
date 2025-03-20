@@ -11,11 +11,24 @@ import androidx.appcompat.app.AppCompatActivity
 import dev.broken.app.vibe.databinding.ActivityMainBinding
 import java.util.concurrent.TimeUnit
 
+/**
+ * Feature flags for testing different app behaviors
+ */
+object FeatureFlags {
+    var DISABLE_SOUND_FOR_TESTING = false
+    var DISABLE_VIBRATION_FOR_TESTING = false
+    var USE_SHORT_TIMERS_FOR_TESTING = false
+    var LOG_TIMER_EVENTS = false
+}
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var timer: CountDownTimer? = null
-    private var isTimerRunning = false
+    
+    // Changed to internal for testing access
+    internal var isTimerRunning = false
+    
     private var mediaPlayer: MediaPlayer? = null
     
     // Define meditation durations in minutes
@@ -62,13 +75,26 @@ class MainActivity : AppCompatActivity() {
         playBellSound()
         
         val durationMinutes = durations[selectedDurationIndex]
-        val durationMillis = TimeUnit.MINUTES.toMillis(durationMinutes.toLong())
+        var durationMillis = TimeUnit.MINUTES.toMillis(durationMinutes.toLong())
+        
+        // Use shorter timers for testing if flag is enabled
+        if (FeatureFlags.USE_SHORT_TIMERS_FOR_TESTING) {
+            durationMillis = TimeUnit.SECONDS.toMillis(10) // Use 10 seconds for testing
+        }
+        
+        if (FeatureFlags.LOG_TIMER_EVENTS) {
+            android.util.Log.d("VibeApp", "Starting timer for ${durationMillis}ms")
+        }
         
         timer = object : CountDownTimer(durationMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)
                 val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60
                 binding.timerTextView.text = String.format("%02d:%02d", minutes, seconds)
+                
+                if (FeatureFlags.LOG_TIMER_EVENTS) {
+                    android.util.Log.d("VibeApp", "Timer tick: ${minutes}m ${seconds}s remaining")
+                }
             }
 
             override fun onFinish() {
@@ -76,6 +102,10 @@ class MainActivity : AppCompatActivity() {
                 resetTimerUI()
                 // Play end sound
                 playBellSound()
+                
+                if (FeatureFlags.LOG_TIMER_EVENTS) {
+                    android.util.Log.d("VibeApp", "Timer finished")
+                }
             }
         }.start()
         
@@ -112,19 +142,33 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun playBellSound() {
-        // Release any existing MediaPlayer
-        mediaPlayer?.release()
+        // Skip playing sounds if disabled for testing
+        if (!FeatureFlags.DISABLE_SOUND_FOR_TESTING) {
+            // Release any existing MediaPlayer
+            mediaPlayer?.release()
+            
+            // Create and prepare a new MediaPlayer
+            mediaPlayer = MediaPlayer.create(this, R.raw.med_bell)
+            mediaPlayer?.start()
+            
+            if (FeatureFlags.LOG_TIMER_EVENTS) {
+                android.util.Log.d("VibeApp", "Bell sound played")
+            }
+        }
         
-        // Create and prepare a new MediaPlayer
-        mediaPlayer = MediaPlayer.create(this, R.raw.med_bell)
-        mediaPlayer?.start()
-        
-        // Also vibrate the device gently
-        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if (vibrator.hasVibrator()) {
-            // Create a gentle vibration pattern - 500ms vibration, 200ms pause, 500ms vibration
-            val vibrationPattern = longArrayOf(0, 500, 200, 500)
-            vibrator.vibrate(VibrationEffect.createWaveform(vibrationPattern, -1))
+        // Skip vibration if disabled for testing
+        if (!FeatureFlags.DISABLE_VIBRATION_FOR_TESTING) {
+            // Also vibrate the device gently
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            if (vibrator.hasVibrator()) {
+                // Create a gentle vibration pattern - 500ms vibration, 200ms pause, 500ms vibration
+                val vibrationPattern = longArrayOf(0, 500, 200, 500)
+                vibrator.vibrate(VibrationEffect.createWaveform(vibrationPattern, -1))
+                
+                if (FeatureFlags.LOG_TIMER_EVENTS) {
+                    android.util.Log.d("VibeApp", "Device vibration triggered")
+                }
+            }
         }
     }
 
