@@ -2,9 +2,9 @@ name: Android CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages and releases
 permissions:
@@ -31,22 +31,15 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     
-    # For this example (without real build tools) we'll skip the actual build
-    # Normally you would uncomment these lines:
-    # - name: Build with Gradle
-    #   run: ./gradlew build
-    # 
-    # - name: Run Tests
-    #   run: ./gradlew test
-    #  
-    # - name: Build Debug APK
-    #   run: ./gradlew assembleDebug
+    # Build the actual app
+    - name: Build with Gradle
+      run: ./gradlew build
     
-    # For example purposes, we'll create a dummy APK
-    - name: Create dummy APK for demo
-      run: |
-        mkdir -p app/build/outputs/apk/debug
-        echo "This is a dummy APK for demo purposes" > app/build/outputs/apk/debug/app-debug.apk
+    - name: Run Tests
+      run: ./gradlew test
+     
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug
     
     - name: Generate version name
       id: version
@@ -90,9 +83,9 @@ jobs:
           _Build completed at: ${{ steps.version.outputs.version }}_
         edit-mode: replace
     
-    # Only create release for pushes to master branch, not for pull requests
+    # Only create release for pushes to main branch, not for pull requests
     - name: Create GitHub Release
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: softprops/action-gh-release@v1
       with:
         tag_name: v${{ steps.version.outputs.version }}
@@ -102,7 +95,7 @@ jobs:
           ## Vibe Android App Release v${{ steps.version.outputs.version }}
           
           ### What's in this release:
-          - Latest changes from the master branch
+          - Latest changes from the main branch
           - APK ready for testing on Android devices
           
           Download the APK and install on your device to test the latest features!
