@@ -1,6 +1,5 @@
 package dev.broken.app.vibe
 
-import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -9,6 +8,7 @@ import android.os.Vibrator
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import dev.broken.app.vibe.databinding.ActivityMainBinding
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 /**
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTick(millisUntilFinished: Long) {
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)
                 val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60
-                binding.timerTextView.text = String.format("%02d:%02d", minutes, seconds)
+                binding.timerTextView.text = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
                 
                 if (FeatureFlags.LOG_TIMER_EVENTS) {
                     android.util.Log.d("VibeApp", "Timer tick: ${minutes}m ${seconds}s remaining")
@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                binding.timerTextView.text = "00:00"
+                binding.timerTextView.text = getString(R.string._00_00)
                 resetTimerUI()
                 // Play end sound
                 playBellSound()
@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun updateTimerDisplay(minutes: Int) {
-        binding.timerTextView.text = String.format("%02d:00", minutes)
+        binding.timerTextView.text = String.format(Locale.getDefault(),"%02d:00", minutes)
     }
     
     private fun playBellSound() {
@@ -159,7 +159,7 @@ class MainActivity : AppCompatActivity() {
         // Skip vibration if disabled for testing
         if (!FeatureFlags.DISABLE_VIBRATION_FOR_TESTING) {
             // Also vibrate the device gently
-            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            val vibrator = getSystemService(Vibrator::class.java) as Vibrator
             if (vibrator.hasVibrator()) {
                 // Create a gentle vibration pattern - 500ms vibration, 200ms pause, 500ms vibration
                 val vibrationPattern = longArrayOf(0, 500, 200, 500)
