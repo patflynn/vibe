@@ -2,13 +2,16 @@ package dev.broken.app.vibe
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.VibrationEffect
-import android.os.Vibrator
+import android.os.VibratorManager
 import android.view.WindowManager
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import dev.broken.app.vibe.databinding.ActivityMainBinding
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 /**
@@ -35,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     private val durations = listOf(5, 10, 15, 20, 25, 30, 40)
     private var selectedDurationIndex = 3 // Default is 20 minutes (index 3)
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -60,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         updateTimerDisplay(durations[selectedDurationIndex])
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun setupStartButton() {
         binding.startButton.setOnClickListener {
             if (isTimerRunning) {
@@ -70,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun startTimer() {
         // Play start sound
         playBellSound()
@@ -90,15 +96,16 @@ class MainActivity : AppCompatActivity() {
             override fun onTick(millisUntilFinished: Long) {
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)
                 val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60
-                binding.timerTextView.text = String.format("%02d:%02d", minutes, seconds)
+                binding.timerTextView.text = String.format(Locale.getDefault(),"%02d:%02d", minutes, seconds)
                 
                 if (FeatureFlags.LOG_TIMER_EVENTS) {
                     android.util.Log.d("VibeApp", "Timer tick: ${minutes}m ${seconds}s remaining")
                 }
             }
 
+            @RequiresApi(Build.VERSION_CODES.S)
             override fun onFinish() {
-                binding.timerTextView.text = "00:00"
+                binding.timerTextView.text = getString(R.string._00_00)
                 resetTimerUI()
                 // Play end sound
                 playBellSound()
@@ -138,9 +145,10 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun updateTimerDisplay(minutes: Int) {
-        binding.timerTextView.text = String.format("%02d:00", minutes)
+        binding.timerTextView.text = String.format(Locale.getDefault(), "%02d:00", minutes)
     }
     
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun playBellSound() {
         // Skip playing sounds if disabled for testing
         if (!FeatureFlags.DISABLE_SOUND_FOR_TESTING) {
@@ -159,7 +167,8 @@ class MainActivity : AppCompatActivity() {
         // Skip vibration if disabled for testing
         if (!FeatureFlags.DISABLE_VIBRATION_FOR_TESTING) {
             // Also vibrate the device gently
-            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            val vibrator = vibratorManager.defaultVibrator
             if (vibrator.hasVibrator()) {
                 // Create a gentle vibration pattern - 500ms vibration, 200ms pause, 500ms vibration
                 val vibrationPattern = longArrayOf(0, 500, 200, 500)
