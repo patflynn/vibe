@@ -7,7 +7,7 @@
 /app/build/
 /build/
 /app/outputs/
-
+/app/google-services.json
 # Local properties
 local.properties
 
