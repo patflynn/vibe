@@ -1,0 +1,59 @@
+name: Firebase Test Lab Integration
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Allow manual triggers
+
+jobs:
+  instrumentation-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build debug APK and test APK
+        run: ./gradlew assembleDebug assembleDebugAndroidTest
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.FIREBASE_PROJECT_ID }}
+          service_account_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          export_default_credentials: true
+
+      - name: Run instrumentation tests in Firebase Test Lab
+        run: |
+          gcloud firebase test android run \
+            --type instrumentation \
+            --app app/build/outputs/apk/debug/app-debug.apk \
+            --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            --device model=Pixel2,version=30,locale=en,orientation=portrait \
+            --device model=Nexus6P,version=29,locale=en,orientation=portrait \
+            --device model=Pixel4,version=31,locale=en,orientation=portrait \
+            --results-bucket gs://${{ secrets.FIREBASE_TEST_BUCKET }} \
+            --results-dir=$GITHUB_RUN_ID-$GITHUB_RUN_NUMBER
+
+      - name: Download test results
+        if: always()
+        run: |
+          mkdir -p firebase-test-results
+          gsutil -m cp -r gs://${{ secrets.FIREBASE_TEST_BUCKET }}/$GITHUB_RUN_ID-$GITHUB_RUN_NUMBER/* firebase-test-results/
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: firebase-test-results
+          path: firebase-test-results
