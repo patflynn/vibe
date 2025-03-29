@@ -49,13 +49,17 @@ jobs:
 
       - name: Run instrumentation tests in Firebase Test Lab
         run: |
+          # List available device models first for debugging
+          echo "Available device models:"
+          gcloud firebase test android models list --format="value(MODEL_ID)" | grep -E "pixel|nexus"
+          
+          # Run tests with correct device model IDs (lowercase naming convention)
           gcloud firebase test android run \
             --type instrumentation \
             --app app/build/outputs/apk/debug/app-debug.apk \
             --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-            --device model=Pixel2,version=30,locale=en,orientation=portrait \
-            --device model=Nexus6P,version=29,locale=en,orientation=portrait \
-            --device model=Pixel4,version=31,locale=en,orientation=portrait \
+            --device model=pixel2,version=30,locale=en,orientation=portrait \
+            --device model=nexus6p,version=29,locale=en,orientation=portrait \
             --results-bucket gs://${{ secrets.FIREBASE_TEST_BUCKET }} \
             --results-dir=$GITHUB_RUN_ID-$GITHUB_RUN_NUMBER
 
