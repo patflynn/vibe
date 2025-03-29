@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.appdistribution'
+    id 'com.github.triplet.play' version '3.8.4' // Play Store publishing plugin
 }
 
 android {
@@ -27,9 +28,35 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            // Signing configuration for release builds
+            signingConfig signingConfigs.release
         }
+    }
+    
+    // Signing configuration defined here but credentials loaded from CI environment
+    signingConfigs {
+        release {
+            // These values will be provided by the CI workflow through env vars
+            storeFile file(System.getenv("KEYSTORE_FILE") ?: "debug.keystore")
+            storePassword System.getenv("SIGNING_STORE_PASSWORD") ?: "android"
+            keyAlias System.getenv("SIGNING_KEY_ALIAS") ?: "androiddebugkey"
+            keyPassword System.getenv("SIGNING_KEY_PASSWORD") ?: "android"
+        }
+    }
+    
+    // Play Store publishing configuration
+    play {
+        // Path to service account JSON file - set in CI workflow
+        serviceAccountCredentials.set(file(System.getenv("PLAY_CONFIG_JSON_FILE") ?: "play-store-config.json"))
+        
+        // Default track for publishing - can be overridden in CI
+        track.set(System.getenv("PLAY_TRACK") ?: "internal")
+        
+        // User fraction for staged releases - can be overridden in CI
+        userFraction.set(Double.parseDouble(System.getenv("PLAY_USER_FRACTION") ?: "1.0"))
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17

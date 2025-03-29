@@ -1,0 +1,175 @@
+name: Play Store Publishing
+
+on:
+  # Manual trigger with version parameters
+  workflow_dispatch:
+    inputs:
+      versionName:
+        description: 'Version name (e.g., 1.0.1)'
+        required: true
+      versionCode:
+        description: 'Version code (integer)'
+        required: true
+      track:
+        description: 'Release track'
+        required: true
+        default: 'internal'
+        type: choice
+        options:
+          - internal
+          - alpha
+          - beta
+          - production
+      userFraction:
+        description: 'User fraction for staged rollout (production only, e.g., 0.1 for 10%)'
+        required: false
+        default: '1.0'
+      releaseNotes:
+        description: 'Release notes (markdown)'
+        required: false
+      
+  # Triggered when a release is created
+  release:
+    types: [created]
+
+# Reuse CI security check for added protection
+jobs:
+  security-check:
+    uses: ./.github/workflows/ci-security-check.yml
+  
+  publish:
+    needs: security-check
+    # Only run if security check passes
+    if: needs.security-check.outputs.should-run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      # Set up JDK for building
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+      
+      # Decode Google Services config
+      - name: Decode google-services.json
+        env:
+          GOOGLE_SERVICES_JSON_B64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+        run: |
+          echo $GOOGLE_SERVICES_JSON_B64 | base64 --decode > app/google-services.json
+          echo "google-services.json created successfully."
+      
+      # Prepare Play Store config
+      - name: Decode Play Store config
+        env:
+          PLAY_CONFIG_JSON: ${{ secrets.PLAY_CONFIG_JSON }}
+        run: |
+          echo $PLAY_CONFIG_JSON > app/play-store-config.json
+          echo "Play Store config created successfully."
+      
+      # Grant execute permission for gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      # Set version from inputs or use tag value
+      - name: Set version values
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "VERSION_NAME=${{ github.event.inputs.versionName }}" >> $GITHUB_ENV
+            echo "VERSION_CODE=${{ github.event.inputs.versionCode }}" >> $GITHUB_ENV
+            echo "TRACK=${{ github.event.inputs.track }}" >> $GITHUB_ENV
+            echo "USER_FRACTION=${{ github.event.inputs.userFraction }}" >> $GITHUB_ENV
+          else
+            # Extract from GitHub release tag (assumes format vX.Y.Z or X.Y.Z)
+            TAG_NAME="${{ github.event.release.tag_name }}"
+            # Remove 'v' prefix if present
+            VERSION_NAME="${TAG_NAME#v}"
+            
+            # Generate version code from date (YYMMDDNN format)
+            VERSION_CODE=$(date +'%y%m%d01')
+            
+            echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+            echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+            echo "TRACK=internal" >> $GITHUB_ENV  # Default to internal for auto releases
+            echo "USER_FRACTION=1.0" >> $GITHUB_ENV
+          fi
+      
+      # Update version in build.gradle
+      - name: Update version in build.gradle
+        run: |
+          sed -i "s/versionCode .*/versionCode ${{ env.VERSION_CODE }}/" app/build.gradle
+          sed -i "s/versionName \".*\"/versionName \"${{ env.VERSION_NAME }}\"/" app/build.gradle
+          cat app/build.gradle | grep -A 2 "versionCode"
+      
+      # Decode signing key
+      - name: Decode Android signing key
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: |
+          echo $SIGNING_KEY | base64 -d > app/android-signing-keystore.jks
+          echo "Keystore decoded successfully."
+      
+      # Build Release APK
+      - name: Build Release APK
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+        run: |
+          ./gradlew :app:bundleRelease -PversionCode=${{ env.VERSION_CODE }} -PversionName=${{ env.VERSION_NAME }}
+      
+      # Sign the app bundle
+      - name: Sign App Bundle
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+      
+      # Generate release notes file
+      - name: Create release notes file
+        run: |
+          mkdir -p app/src/main/play/release-notes/en-US
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ github.event.inputs.releaseNotes }}" ]]; then
+            echo "${{ github.event.inputs.releaseNotes }}" > app/src/main/play/release-notes/en-US/default.txt
+          elif [[ "${{ github.event_name }}" == "release" && -n "${{ github.event.release.body }}" ]]; then
+            echo "${{ github.event.release.body }}" > app/src/main/play/release-notes/en-US/default.txt
+          else
+            echo "New version ${{ env.VERSION_NAME }}" > app/src/main/play/release-notes/en-US/default.txt
+          fi
+      
+      # Upload to Play Store
+      - name: Upload to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: app/play-store-config.json
+          packageName: dev.broken.app.vibe
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          track: ${{ env.TRACK }}
+          userFraction: ${{ env.USER_FRACTION }}
+          status: completed
+          releaseName: ${{ env.VERSION_NAME }}
+          mappingFile: app/build/outputs/mapping/release/mapping.txt
+          whatsNewDirectory: app/src/main/play/release-notes
+        
+      # Create GitHub release comment
+      - name: Create success comment
+        if: github.event_name == 'workflow_dispatch'
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.inputs.issue_number || '' }}
+          body: |
+            ## 🚀 Play Store Deployment Success!
+            
+            Version **${{ env.VERSION_NAME }}** (code: ${{ env.VERSION_CODE }}) has been successfully uploaded to the **${{ env.TRACK }}** track.
+            
+            ${{ env.TRACK == 'production' && env.USER_FRACTION < 1.0 && format('This is a staged rollout to {0}% of users.', env.USER_FRACTION * 100) || '' }}
+            
+            The app should be available for testers soon. Check the Google Play Console for status updates.
