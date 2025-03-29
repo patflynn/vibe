@@ -19,85 +19,24 @@ permissions:
   actions: read
 
 jobs:
-  # Job to check if CI should run
-  ci-security-check:
-    runs-on: ubuntu-latest
-    outputs:
-      should-run: ${{ steps.check.outputs.should-run }}
-    steps:
-      - id: check
-        name: Check if CI should run
-        run: |
-          # Always run for pushes to main branch
-          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "CI running for push to main branch"
-            echo "should-run=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          
-          # Always run for workflow_dispatch events (manual trigger)
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "CI running for manual workflow trigger"
-            echo "should-run=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          
-          # For PRs, check for 'run-ci' label or organization membership
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            # Check if PR has 'run-ci' label
-            HAS_LABEL=$(curl -s -H "Authorization: token ${{ github.token }}" \
-              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels" | \
-              grep -q "\"name\": *\"run-ci\"" && echo "true" || echo "false")
-            
-            # Check if PR author is org member or collaborator
-            IS_COLLABORATOR=$(curl -s -H "Authorization: token ${{ github.token }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/${{ github.repository }}/collaborators/${{ github.event.pull_request.user.login }}" \
-              -o /dev/null -w "%{http_code}")
-            
-            if [[ "$HAS_LABEL" == "true" || "$IS_COLLABORATOR" == "204" ]]; then
-              echo "CI running for PR by org member or with run-ci label"
-              echo "should-run=true" >> $GITHUB_OUTPUT
-              exit 0
-            else
-              echo "CI skipped: PR lacks 'run-ci' label and author is not a collaborator"
-              echo "should-run=false" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-          fi
-          
-          # Default fallback - don't run
-          echo "CI skipped: Conditions not met"
-          echo "should-run=false" >> $GITHUB_OUTPUT
-
-  # Skip notification job (runs when CI is skipped)
-  skipped-notification:
-    needs: ci-security-check
-    if: needs.ci-security-check.outputs.should-run == 'false'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Skip reason
-        run: |
-          echo "::notice::Android CI skipped: This PR requires a 'run-ci' label to be applied by a maintainer before CI will run."
-          echo "::notice::This is a security measure to prevent unauthorized CI usage."
-      
-      # Add a PR comment explaining the skip if this is a PR
-      - name: Comment on PR
-        if: github.event_name == 'pull_request'
-        run: |
-          MESSAGE="## 🛑 CI Check Skipped\n\nAndroid CI build was not run because this pull request does not have the \`run-ci\` label.\n\nThis is a security measure to prevent unauthorized CI usage. Please ask a repository maintainer to add the \`run-ci\` label if you want to run CI."
-          
-          curl -s -X POST \
-            -H "Authorization: token ${{ github.token }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -d "{\"body\": \"$MESSAGE\"}" \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
-
+  # Call the reusable security check workflow
+  security-check:
+    uses: ./.github/workflows/ci-security-check.yml
+  
+  # Call the reusable notification workflow if CI should be skipped
+  notify-skip:
+    needs: security-check
+    if: needs.security-check.outputs.should-run == 'false'
+    uses: ./.github/workflows/ci-skipped-notification.yml
+    with:
+      workflow-name: 'Android CI'
+      security-check: true
+  
   # Main build job, depends on security check
   build:
-    needs: ci-security-check
+    needs: security-check
     # Only run if the check passed
-    if: needs.ci-security-check.outputs.should-run == 'true'
+    if: needs.security-check.outputs.should-run == 'true'
     runs-on: ubuntu-latest
 
     steps:

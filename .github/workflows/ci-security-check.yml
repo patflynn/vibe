@@ -1,0 +1,112 @@
+name: CI Security Check
+
+# This is a reusable workflow that other workflows can call
+on:
+  workflow_call:
+    # Input parameters that callers can provide
+    inputs:
+      check-file-changes:
+        description: 'Whether to check if code files have been changed'
+        required: false
+        default: false
+        type: boolean
+      file-patterns:
+        description: 'Regex patterns for file extensions to consider as code changes'
+        required: false
+        default: '\.kt$|\.xml$|\.gradle$|\.java$|\.properties$'
+        type: string
+    # Outputs that calling workflows can use
+    outputs:
+      should-run:
+        description: 'Whether CI should run based on security checks'
+        value: ${{ jobs.security-check.outputs.should-run }}
+      is-code-change:
+        description: 'Whether code files have been changed'
+        value: ${{ jobs.security-check.outputs.is-code-change }}
+
+jobs:
+  security-check:
+    runs-on: ubuntu-latest
+    outputs:
+      should-run: ${{ steps.check.outputs.should-run }}
+      is-code-change: ${{ steps.path-filter.outputs.is-code-change || 'true' }} # Default to true if not checking
+    steps:
+      # Check file paths if requested
+      - uses: actions/checkout@v3
+        if: inputs.check-file-changes
+      
+      - id: path-filter
+        if: inputs.check-file-changes
+        name: Check if code files were changed
+        run: |
+          # Get changed files
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # For PR, get changed files from the event
+            CHANGED_FILES=$(curl -s -H "Authorization: token ${{ github.token }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+              | jq -r '.[].filename')
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
+            # For push, get changed files from git
+            git fetch origin main
+            CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+          else
+            # For manual trigger, assume code changes
+            echo "Manual trigger - assuming code changes"
+            echo "is-code-change=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Check if there are code changes that require testing
+          if echo "$CHANGED_FILES" | grep -q -E '${{ inputs.file-patterns }}'; then
+            echo "Code files changed, running tests"
+            echo "is-code-change=true" >> $GITHUB_OUTPUT
+          else
+            echo "Only non-code files changed, skipping tests"
+            echo "is-code-change=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - id: check
+        name: Check if CI should run
+        run: |
+          # Always run for pushes to main branch
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "CI running for push to main branch"
+            echo "should-run=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # Always run for workflow_dispatch events (manual trigger)
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "CI running for manual workflow trigger"
+            echo "should-run=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          # For PRs, check for 'run-ci' label or organization membership
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # Check if PR has 'run-ci' label
+            HAS_LABEL=$(curl -s -H "Authorization: token ${{ github.token }}" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels" | \
+              grep -q "\"name\": *\"run-ci\"" && echo "true" || echo "false")
+            
+            # Check if PR author is org member or collaborator
+            IS_COLLABORATOR=$(curl -s -H "Authorization: token ${{ github.token }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${{ github.repository }}/collaborators/${{ github.event.pull_request.user.login }}" \
+              -o /dev/null -w "%{http_code}")
+            
+            if [[ "$HAS_LABEL" == "true" || "$IS_COLLABORATOR" == "204" ]]; then
+              echo "CI running for PR by org member or with run-ci label"
+              echo "should-run=true" >> $GITHUB_OUTPUT
+              exit 0
+            else
+              echo "CI skipped: PR lacks 'run-ci' label and author is not a collaborator"
+              echo "should-run=false" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          fi
+          
+          # Default fallback - don't run
+          echo "CI skipped: Conditions not met"
+          echo "should-run=false" >> $GITHUB_OUTPUT

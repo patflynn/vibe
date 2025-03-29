@@ -13,128 +13,37 @@ on:
   workflow_dispatch:
 
 jobs:
-  # Job to check if CI should run
-  ci-security-check:
-    runs-on: ubuntu-latest
-    outputs:
-      should-run: ${{ steps.check.outputs.should-run }}
-      is-code-change: ${{ steps.path-filter.outputs.is-code-change }}
-    steps:
-      # Check file paths to see if we need to run tests
-      - uses: actions/checkout@v3
-      
-      - id: path-filter
-        name: Check if code files were changed
-        run: |
-          # Get changed files
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            # For PR, get changed files from the event
-            CHANGED_FILES=$(curl -s -H "Authorization: token ${{ github.token }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
-              | jq -r '.[].filename')
-          elif [[ "${{ github.event_name }}" == "push" ]]; then
-            # For push, get changed files from git
-            git fetch origin main
-            CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-          else
-            # For manual trigger, assume code changes
-            echo "Manual trigger - assuming code changes"
-            echo "is-code-change=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          
-          # Check if there are code changes that require testing
-          if echo "$CHANGED_FILES" | grep -q -E '\.kt$|\.xml$|\.gradle$|\.java$|\.properties$'; then
-            echo "Code files changed, running Firebase Test Lab"
-            echo "is-code-change=true" >> $GITHUB_OUTPUT
-          else
-            echo "Only non-code files changed, skipping Firebase Test Lab"
-            echo "is-code-change=false" >> $GITHUB_OUTPUT
-          fi
-      
-      - id: check
-        name: Check if CI should run
-        run: |
-          # Always run for pushes to main branch
-          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "CI running for push to main branch"
-            echo "should-run=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          
-          # Always run for workflow_dispatch events (manual trigger)
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "CI running for manual workflow trigger"
-            echo "should-run=true" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          
-          # For PRs, check for 'run-ci' label or organization membership
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            # Check if PR has 'run-ci' label
-            HAS_LABEL=$(curl -s -H "Authorization: token ${{ github.token }}" \
-              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels" | \
-              grep -q "\"name\": *\"run-ci\"" && echo "true" || echo "false")
-            
-            # Check if PR author is org member or collaborator
-            IS_COLLABORATOR=$(curl -s -H "Authorization: token ${{ github.token }}" \
-              -H "Accept: application/vnd.github.v3+json" \
-              "https://api.github.com/repos/${{ github.repository }}/collaborators/${{ github.event.pull_request.user.login }}" \
-              -o /dev/null -w "%{http_code}")
-            
-            if [[ "$HAS_LABEL" == "true" || "$IS_COLLABORATOR" == "204" ]]; then
-              echo "CI running for PR by org member or with run-ci label"
-              echo "should-run=true" >> $GITHUB_OUTPUT
-              exit 0
-            else
-              echo "CI skipped: PR lacks 'run-ci' label and author is not a collaborator"
-              echo "should-run=false" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-          fi
-          
-          # Default fallback - don't run
-          echo "CI skipped: Conditions not met"
-          echo "should-run=false" >> $GITHUB_OUTPUT
-
-  # Skip notification job (runs when CI is skipped)
-  skipped-notification:
-    needs: ci-security-check
-    if: needs.ci-security-check.outputs.should-run == 'false' || needs.ci-security-check.outputs.is-code-change == 'false'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Skip reason
-        run: |
-          if [[ "${{ needs.ci-security-check.outputs.should-run }}" == "false" ]]; then
-            echo "::notice::Firebase Test Lab CI skipped: This PR requires a 'run-ci' label to be applied by a maintainer before CI will run."
-            echo "::notice::This is a security measure to prevent unauthorized CI usage."
-          else
-            echo "::notice::Firebase Test Lab CI skipped: No code changes detected that require testing."
-            echo "::notice::Only documentation or non-code files were changed."
-          fi
-      
-      # Add a PR comment explaining the skip if this is a PR
-      - name: Comment on PR
-        if: github.event_name == 'pull_request'
-        run: |
-          if [[ "${{ needs.ci-security-check.outputs.should-run }}" == "false" ]]; then
-            MESSAGE="## 🛑 CI Check Skipped\n\nFirebase Test Lab tests were not run because this pull request does not have the \`run-ci\` label.\n\nThis is a security measure to prevent unauthorized CI usage. Please ask a repository maintainer to add the \`run-ci\` label if you want to run tests."
-          else
-            MESSAGE="## ⏩ CI Check Skipped\n\nFirebase Test Lab tests were not run because no code changes were detected.\n\nOnly documentation or non-code files were changed, so tests are not necessary."
-          fi
-          
-          curl -s -X POST \
-            -H "Authorization: token ${{ github.token }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            -d "{\"body\": \"$MESSAGE\"}" \
-            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
-
+  # Call the reusable security check workflow with file path checking enabled
+  security-check:
+    uses: ./.github/workflows/ci-security-check.yml
+    with:
+      check-file-changes: true
+      file-patterns: '\.kt$|\.xml$|\.gradle$|\.java$|\.properties$'
+  
+  # Call the reusable notification workflow if CI should be skipped due to security check
+  notify-security-skip:
+    needs: security-check
+    if: needs.security-check.outputs.should-run == 'false'
+    uses: ./.github/workflows/ci-skipped-notification.yml
+    with:
+      workflow-name: 'Firebase Test Lab'
+      security-check: true
+  
+  # Call the reusable notification workflow if CI should be skipped due to no code changes
+  notify-no-code-changes:
+    needs: security-check
+    if: needs.security-check.outputs.should-run == 'true' && needs.security-check.outputs.is-code-change == 'false'
+    uses: ./.github/workflows/ci-skipped-notification.yml
+    with:
+      workflow-name: 'Firebase Test Lab'
+      security-check: false
+      code-change-check: true
+  
   # Main test job, depends on security check
   instrumentation-test:
-    needs: ci-security-check
+    needs: security-check
     # Only run if security check passes AND we have code changes
-    if: needs.ci-security-check.outputs.should-run == 'true' && needs.ci-security-check.outputs.is-code-change == 'true'
+    if: needs.security-check.outputs.should-run == 'true' && needs.security-check.outputs.is-code-change == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
