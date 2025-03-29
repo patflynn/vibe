@@ -68,7 +68,8 @@ jobs:
         env:
           PLAY_CONFIG_JSON: ${{ secrets.PLAY_CONFIG_JSON }}
         run: |
-          echo $PLAY_CONFIG_JSON > app/play-store-config.json
+          echo $PLAY_CONFIG_JSON > play-store-config.json
+          echo "PLAY_CONFIG_JSON_FILE=$PWD/play-store-config.json" >> $GITHUB_ENV
           echo "Play Store config created successfully."
       
       # Grant execute permission for gradlew
@@ -111,12 +112,14 @@ jobs:
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
         run: |
-          echo $SIGNING_KEY | base64 -d > app/android-signing-keystore.jks
+          echo $SIGNING_KEY | base64 -d > keystore.jks
+          echo "KEYSTORE_FILE=$PWD/keystore.jks" >> $GITHUB_ENV
           echo "Keystore decoded successfully."
       
       # Build Release APK
       - name: Build Release APK
         env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           SIGNING_STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
@@ -149,7 +152,7 @@ jobs:
       - name: Upload to Play Store
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJson: app/play-store-config.json
+          serviceAccountJson: ${{ env.PLAY_CONFIG_JSON_FILE }}
           packageName: dev.broken.app.vibe
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: ${{ env.TRACK }}
