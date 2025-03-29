@@ -54,6 +54,9 @@ jobs:
           gcloud firebase test android models list --format="value(MODEL_ID)" | grep -i pixel
           
           # Run tests with newer devices that support minSdkVersion 30+
+          RESULTS_DIR="github-$GITHUB_RUN_ID-$GITHUB_RUN_NUMBER"
+          echo "Using results directory: $RESULTS_DIR"
+          
           gcloud firebase test android run \
             --type instrumentation \
             --app app/build/outputs/apk/debug/app-debug.apk \
@@ -62,13 +65,26 @@ jobs:
             --device model=oriole,version=31,locale=en,orientation=portrait \
             --device model=panther,version=33,locale=en,orientation=portrait \
             --results-bucket gs://${{ secrets.FIREBASE_TEST_BUCKET }} \
-            --results-dir=$GITHUB_RUN_ID-$GITHUB_RUN_NUMBER
+            --results-dir=$RESULTS_DIR
+            
+          # Save the results dir for the next step
+          echo "RESULTS_DIR=$RESULTS_DIR" >> $GITHUB_ENV
 
       - name: Download test results
         if: always()
         run: |
           mkdir -p firebase-test-results
-          gsutil -m cp -r gs://${{ secrets.FIREBASE_TEST_BUCKET }}/$GITHUB_RUN_ID-$GITHUB_RUN_NUMBER/* firebase-test-results/
+          echo "Attempting to download test results from GCS bucket..."
+          # Try to list files in the bucket first to understand what's available
+          gsutil ls gs://${{ secrets.FIREBASE_TEST_BUCKET }}/
+          
+          # List the latest directories (newest first)
+          echo "Latest directories in bucket:"
+          gsutil ls -l gs://${{ secrets.FIREBASE_TEST_BUCKET }}/ | sort -r | head -10
+          
+          # Try to download files from the expected location using the saved RESULTS_DIR
+          echo "Downloading from gs://${{ secrets.FIREBASE_TEST_BUCKET }}/$RESULTS_DIR/*"
+          gsutil -m cp -r gs://${{ secrets.FIREBASE_TEST_BUCKET }}/$RESULTS_DIR/* firebase-test-results/ || echo "No files found in expected location, continuing workflow"
 
       - name: Upload test results
         if: always()
@@ -76,3 +92,4 @@ jobs:
         with:
           name: firebase-test-results
           path: firebase-test-results
+          if-no-files-found: warn
