@@ -1,10 +1,16 @@
 name: Android CI
 
 on:
+  # Always run on pushes to main (these are trusted by definition)
   push:
     branches: [ main ]
+  
+  # For pull requests, use conditional execution
   pull_request:
     branches: [ main ]
+    
+  # Allow manual trigger
+  workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages and releases
 permissions:
@@ -13,7 +19,24 @@ permissions:
   actions: read
 
 jobs:
+  # Call the reusable security check workflow
+  security-check:
+    uses: ./.github/workflows/ci-security-check.yml
+  
+  # Call the reusable notification workflow if CI should be skipped
+  notify-skip:
+    needs: security-check
+    if: needs.security-check.outputs.should-run == 'false'
+    uses: ./.github/workflows/ci-skipped-notification.yml
+    with:
+      workflow-name: 'Android CI'
+      security-check: true
+  
+  # Main build job, depends on security check
   build:
+    needs: security-check
+    # Only run if the check passed
+    if: needs.security-check.outputs.should-run == 'true'
     runs-on: ubuntu-latest
 
     steps:

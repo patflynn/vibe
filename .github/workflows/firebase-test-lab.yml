@@ -1,14 +1,49 @@
 name: Firebase Test Lab Integration
 
 on:
+  # Always run on pushes to main (these are trusted by definition)
   push:
     branches: [ main ]
+  
+  # For pull requests, use conditional execution
   pull_request:
     branches: [ main ]
-  workflow_dispatch:  # Allow manual triggers
+    
+  # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
+  # Call the reusable security check workflow with file path checking enabled
+  security-check:
+    uses: ./.github/workflows/ci-security-check.yml
+    with:
+      check-file-changes: true
+      file-patterns: '\.kt$|\.xml$|\.gradle$|\.java$|\.properties$'
+  
+  # Call the reusable notification workflow if CI should be skipped due to security check
+  notify-security-skip:
+    needs: security-check
+    if: needs.security-check.outputs.should-run == 'false'
+    uses: ./.github/workflows/ci-skipped-notification.yml
+    with:
+      workflow-name: 'Firebase Test Lab'
+      security-check: true
+  
+  # Call the reusable notification workflow if CI should be skipped due to no code changes
+  notify-no-code-changes:
+    needs: security-check
+    if: needs.security-check.outputs.should-run == 'true' && needs.security-check.outputs.is-code-change == 'false'
+    uses: ./.github/workflows/ci-skipped-notification.yml
+    with:
+      workflow-name: 'Firebase Test Lab'
+      security-check: false
+      code-change-check: true
+  
+  # Main test job, depends on security check
   instrumentation-test:
+    needs: security-check
+    # Only run if security check passes AND we have code changes
+    if: needs.security-check.outputs.should-run == 'true' && needs.security-check.outputs.is-code-change == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

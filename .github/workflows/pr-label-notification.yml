@@ -1,0 +1,37 @@
+name: PR Label Notification
+
+on:
+  pull_request_target:
+    types: [opened, reopened]
+
+jobs:
+  add-notification:
+    runs-on: ubuntu-latest
+    # Skip for maintainers
+    if: github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name || github.actor != 'patflynn'
+    steps:
+      - name: Add comment about CI security
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = context.issue.number;
+            const repo = context.repo;
+            
+            github.rest.issues.createComment({
+              owner: repo.owner,
+              repo: repo.repo,
+              issue_number: prNumber,
+              body: `## 🔒 CI Security Notice
+            
+            Thank you for your contribution! For security reasons, CI workflows will not run automatically on this PR.
+            
+            ### Next steps:
+            
+            A repository maintainer will review your PR and if appropriate, add the \`run-ci\` label to run the CI workflows.
+            
+            This is a security measure to protect our CI resources from potential abuse.
+            
+            [Learn more about our CI security controls](.github/CI_SECURITY.md)
+            `
+            });

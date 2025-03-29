@@ -1,0 +1,55 @@
+name: CI Skipped Notification
+
+# This is a reusable workflow that other workflows can call
+on:
+  workflow_call:
+    # Input parameters that callers can provide
+    inputs:
+      workflow-name:
+        description: 'Name of the workflow that was skipped'
+        required: true
+        type: string
+      security-check:
+        description: 'Whether the workflow was skipped due to security check'
+        required: false
+        default: true
+        type: boolean
+      code-change-check:
+        description: 'Whether the workflow was skipped due to no code changes'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  notify-skip:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip reason
+        run: |
+          if [[ "${{ inputs.security-check }}" == "true" ]]; then
+            echo "::notice::${{ inputs.workflow-name }} skipped: This PR requires a 'run-ci' label to be applied by a maintainer before CI will run."
+            echo "::notice::This is a security measure to prevent unauthorized CI usage."
+          elif [[ "${{ inputs.code-change-check }}" == "true" ]]; then
+            echo "::notice::${{ inputs.workflow-name }} skipped: No code changes detected that require testing."
+            echo "::notice::Only documentation or non-code files were changed."
+          else
+            echo "::notice::${{ inputs.workflow-name }} skipped: Conditions not met."
+          fi
+      
+      # Add a PR comment explaining the skip if this is a PR
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        run: |
+          if [[ "${{ inputs.security-check }}" == "true" ]]; then
+            MESSAGE="## 🛑 ${{ inputs.workflow-name }} Skipped\n\nThe workflow was not run because this pull request does not have the \`run-ci\` label.\n\nThis is a security measure to prevent unauthorized CI usage. Please ask a repository maintainer to add the \`run-ci\` label if you want to run CI."
+          elif [[ "${{ inputs.code-change-check }}" == "true" ]]; then
+            MESSAGE="## ⏩ ${{ inputs.workflow-name }} Skipped\n\nThe workflow was not run because no code changes were detected.\n\nOnly documentation or non-code files were changed, so tests are not necessary."
+          else
+            MESSAGE="## ℹ️ ${{ inputs.workflow-name }} Skipped\n\nThe workflow was skipped because conditions were not met."
+          fi
+          
+          curl -s -X POST \
+            -H "Authorization: token ${{ github.token }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d "{\"body\": \"$MESSAGE\"}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
