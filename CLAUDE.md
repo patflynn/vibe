@@ -22,3 +22,6 @@
 - Always create changes through a PR flow, even without being explicitly asked
 - Create feature branches with descriptive names for all changes
 - Submit pull requests for review before merging to main
+- Make sure that you keep separate issues/features in separate PRs
+- Make sure to update issues with analysis, design considerations, and plan of action
+- Prefer using local testing using the android SDK device manager to save time and money. Only use Firebase when you need to
