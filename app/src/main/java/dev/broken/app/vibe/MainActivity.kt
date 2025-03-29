@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
     private val durations = listOf(5, 10, 15, 20, 25, 30, 40)
     private var selectedDurationIndex = 3 // Default is 20 minutes (index 3)
 
-    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -64,7 +63,6 @@ class MainActivity : AppCompatActivity() {
         updateTimerDisplay(durations[selectedDurationIndex])
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun setupStartButton() {
         binding.startButton.setOnClickListener {
             if (isTimerRunning) {
@@ -75,7 +73,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun startTimer() {
         // Play start sound
         playBellSound()
@@ -103,7 +100,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            @RequiresApi(Build.VERSION_CODES.S)
             override fun onFinish() {
                 binding.timerTextView.text = getString(R.string._00_00)
                 resetTimerUI()
@@ -148,7 +144,6 @@ class MainActivity : AppCompatActivity() {
         binding.timerTextView.text = String.format(Locale.getDefault(), "%02d:00", minutes)
     }
     
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun playBellSound() {
         // Skip playing sounds if disabled for testing
         if (!FeatureFlags.DISABLE_SOUND_FOR_TESTING) {
@@ -166,16 +161,44 @@ class MainActivity : AppCompatActivity() {
         
         // Skip vibration if disabled for testing
         if (!FeatureFlags.DISABLE_VIBRATION_FOR_TESTING) {
-            // Also vibrate the device gently
+            vibrateDevice()
+        }
+    }
+    
+    /**
+     * Handles device vibration with backward compatibility for different API levels
+     */
+    private fun vibrateDevice() {
+        // Create a gentle vibration pattern - 500ms vibration, 200ms pause, 500ms vibration
+        val vibrationPattern = longArrayOf(0, 500, 200, 500)
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // For Android 12+ (API 31+), use VibratorManager
             val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
             val vibrator = vibratorManager.defaultVibrator
             if (vibrator.hasVibrator()) {
-                // Create a gentle vibration pattern - 500ms vibration, 200ms pause, 500ms vibration
-                val vibrationPattern = longArrayOf(0, 500, 200, 500)
                 vibrator.vibrate(VibrationEffect.createWaveform(vibrationPattern, -1))
                 
                 if (FeatureFlags.LOG_TIMER_EVENTS) {
-                    android.util.Log.d("VibeApp", "Device vibration triggered")
+                    android.util.Log.d("VibeApp", "Device vibration triggered (S+)")
+                }
+            }
+        } else {
+            // For Android 11 and below (API 30-), use the deprecated Vibrator directly
+            @Suppress("DEPRECATION")
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as android.os.Vibrator
+            if (vibrator.hasVibrator()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    // For Android 8.0+ use VibrationEffect
+                    vibrator.vibrate(VibrationEffect.createWaveform(vibrationPattern, -1))
+                } else {
+                    // For very old devices, use the deprecated vibrate method
+                    @Suppress("DEPRECATION")
+                    vibrator.vibrate(vibrationPattern, -1)
+                }
+                
+                if (FeatureFlags.LOG_TIMER_EVENTS) {
+                    android.util.Log.d("VibeApp", "Device vibration triggered (legacy)")
                 }
             }
         }

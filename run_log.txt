@@ -1,0 +1,636 @@
+instrumentation-test	Set up job	﻿2025-03-29T17:00:52.2539472Z Current runner version: '2.323.0'
+instrumentation-test	Set up job	2025-03-29T17:00:52.2580770Z ##[group]Operating System
+instrumentation-test	Set up job	2025-03-29T17:00:52.2582503Z Ubuntu
+instrumentation-test	Set up job	2025-03-29T17:00:52.2583752Z 24.04.2
+instrumentation-test	Set up job	2025-03-29T17:00:52.2584919Z LTS
+instrumentation-test	Set up job	2025-03-29T17:00:52.2586162Z ##[endgroup]
+instrumentation-test	Set up job	2025-03-29T17:00:52.2587850Z ##[group]Runner Image
+instrumentation-test	Set up job	2025-03-29T17:00:52.2589343Z Image: ubuntu-24.04
+instrumentation-test	Set up job	2025-03-29T17:00:52.2590620Z Version: 20250323.1.0
+instrumentation-test	Set up job	2025-03-29T17:00:52.2592872Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250323.1/images/ubuntu/Ubuntu2404-Readme.md
+instrumentation-test	Set up job	2025-03-29T17:00:52.2595678Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250323.1
+instrumentation-test	Set up job	2025-03-29T17:00:52.2597942Z ##[endgroup]
+instrumentation-test	Set up job	2025-03-29T17:00:52.2599252Z ##[group]Runner Image Provisioner
+instrumentation-test	Set up job	2025-03-29T17:00:52.2600587Z 2.0.422.1
+instrumentation-test	Set up job	2025-03-29T17:00:52.2601750Z ##[endgroup]
+instrumentation-test	Set up job	2025-03-29T17:00:52.2604407Z ##[group]GITHUB_TOKEN Permissions
+instrumentation-test	Set up job	2025-03-29T17:00:52.2607856Z Contents: read
+instrumentation-test	Set up job	2025-03-29T17:00:52.2609290Z Metadata: read
+instrumentation-test	Set up job	2025-03-29T17:00:52.2610451Z Packages: read
+instrumentation-test	Set up job	2025-03-29T17:00:52.2612097Z ##[endgroup]
+instrumentation-test	Set up job	2025-03-29T17:00:52.2615795Z Secret source: Actions
+instrumentation-test	Set up job	2025-03-29T17:00:52.2617702Z Prepare workflow directory
+instrumentation-test	Set up job	2025-03-29T17:00:52.3131850Z Prepare all required actions
+instrumentation-test	Set up job	2025-03-29T17:00:52.3190903Z Getting action download info
+instrumentation-test	Set up job	2025-03-29T17:00:52.6945553Z ##[group]Download immutable action package 'actions/checkout@v3'
+instrumentation-test	Set up job	2025-03-29T17:00:52.6947209Z Version: 3.6.0
+instrumentation-test	Set up job	2025-03-29T17:00:52.6948608Z Digest: sha256:942562b9c7d4b1f2557f1da21f4d3eb4eb4fd01f2ad78b2a6e187d1b193e0a0f
+instrumentation-test	Set up job	2025-03-29T17:00:52.6950140Z Source commit SHA: f43a0e5ff2bd294095638e18286ca9a3d1956744
+instrumentation-test	Set up job	2025-03-29T17:00:52.6951274Z ##[endgroup]
+instrumentation-test	Set up job	2025-03-29T17:00:52.8075602Z ##[group]Download immutable action package 'actions/setup-java@v3'
+instrumentation-test	Set up job	2025-03-29T17:00:52.8076588Z Version: 3.13.0
+instrumentation-test	Set up job	2025-03-29T17:00:52.8077816Z Digest: sha256:3b7001eb8593af6933487f7e47cf7082e610b62f8b3c6ce2bc6e5201bb1ad005
+instrumentation-test	Set up job	2025-03-29T17:00:52.8078930Z Source commit SHA: 0ab4596768b603586c0de567f2430c30f5b0d2b0
+instrumentation-test	Set up job	2025-03-29T17:00:52.8079790Z ##[endgroup]
+instrumentation-test	Set up job	2025-03-29T17:00:53.0445709Z ##[group]Download immutable action package 'google-github-actions/auth@v2'
+instrumentation-test	Set up job	2025-03-29T17:00:53.0446739Z Version: 2.1.8
+instrumentation-test	Set up job	2025-03-29T17:00:53.0447868Z Digest: sha256:1c9a866114efa29c597f132e9a8398fd0109152b697bb0562bee05683f7afb88
+instrumentation-test	Set up job	2025-03-29T17:00:53.0449044Z Source commit SHA: 71f986410dfbc7added4569d411d040a91dc6935
+instrumentation-test	Set up job	2025-03-29T17:00:53.0449855Z ##[endgroup]
+instrumentation-test	Set up job	2025-03-29T17:00:53.2018091Z ##[group]Download immutable action package 'google-github-actions/setup-gcloud@v1'
+instrumentation-test	Set up job	2025-03-29T17:00:53.2019750Z Version: 1.1.1
+instrumentation-test	Set up job	2025-03-29T17:00:53.2021398Z Digest: sha256:7c0c457e67cc7e0e43162b11dac4a6bd3c4e1482f56b7a22da9267d0dcc0f7f1
+instrumentation-test	Set up job	2025-03-29T17:00:53.2023637Z Source commit SHA: e30db14379863a8c79331b04a9969f4c1e225e0b
+instrumentation-test	Set up job	2025-03-29T17:00:53.2025464Z ##[endgroup]
+instrumentation-test	Set up job	2025-03-29T17:00:53.3479174Z ##[group]Download immutable action package 'actions/upload-artifact@v4'
+instrumentation-test	Set up job	2025-03-29T17:00:53.3481458Z Version: 4.6.2
+instrumentation-test	Set up job	2025-03-29T17:00:53.3483511Z Digest: sha256:290722aa3281d5caf23d0acdc3dbeb3424786a1a01a9cc97e72f147225e37c38
+instrumentation-test	Set up job	2025-03-29T17:00:53.3486125Z Source commit SHA: ea165f8d65b6e75b540449e92b4886f43607fa02
+instrumentation-test	Set up job	2025-03-29T17:00:53.3488177Z ##[endgroup]
+instrumentation-test	Set up job	2025-03-29T17:00:53.7603334Z Complete job name: instrumentation-test
+instrumentation-test	Run actions/checkout@v3	﻿2025-03-29T17:00:53.8564204Z ##[group]Run actions/checkout@v3
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:53.8565861Z with:
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:53.8567111Z   repository: patflynn/vibe
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:53.8568667Z   token: ***
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:53.8569764Z   ssh-strict: true
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:53.8570910Z   persist-credentials: true
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:53.8572124Z   clean: true
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:53.8573256Z   sparse-checkout-cone-mode: true
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:53.8574552Z   fetch-depth: 1
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:53.8575639Z   fetch-tags: false
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:53.8576736Z   lfs: false
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:53.8577908Z   submodules: false
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:53.8579028Z   set-safe-directory: true
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:53.8580461Z ##[endgroup]
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1017977Z Syncing repository: patflynn/vibe
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1021056Z ##[group]Getting Git version info
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1023052Z Working directory is '/home/runner/work/vibe/vibe'
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1025283Z [command]/usr/bin/git version
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1125393Z git version 2.49.0
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1159521Z ##[endgroup]
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1177256Z Temporarily overriding HOME='/home/runner/work/_temp/c63cd670-963c-4875-bf79-510a414cd0b9' before making global git config changes
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1180442Z Adding repository directory to the temporary git global config as a safe directory
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1182821Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/vibe/vibe
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1220546Z Deleting the contents of '/home/runner/work/vibe/vibe'
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1224244Z ##[group]Initializing the repository
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1227030Z [command]/usr/bin/git init /home/runner/work/vibe/vibe
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1324512Z hint: Using 'master' as the name for the initial branch. This default branch name
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1327225Z hint: is subject to change. To configure the initial branch name to use in all
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1329684Z hint: of your new repositories, which will suppress this warning, call:
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1331538Z hint:
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1332911Z hint: 	git config --global init.defaultBranch <name>
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1334551Z hint:
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1335977Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1338186Z hint: 'development'. The just-created branch can be renamed via this command:
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1340463Z hint:
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1341888Z hint: 	git branch -m <name>
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1344672Z Initialized empty Git repository in /home/runner/work/vibe/vibe/.git/
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1353429Z [command]/usr/bin/git remote add origin https://github.com/patflynn/vibe
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1395395Z ##[endgroup]
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1398833Z ##[group]Disabling automatic garbage collection
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1401490Z [command]/usr/bin/git config --local gc.auto 0
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1428080Z ##[endgroup]
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1431141Z ##[group]Setting up auth
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1434029Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1464423Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1839902Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.1870631Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.2109281Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.2148296Z ##[endgroup]
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.2150797Z ##[group]Fetching the repository
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.2160799Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin +5e5641685fa2df1d2a530b8acf334fa1dbee6676:refs/remotes/pull/29/merge
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5087499Z remote: Enumerating objects: 80, done.        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5091830Z remote: Counting objects:   1% (1/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5094366Z remote: Counting objects:   2% (2/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5096537Z remote: Counting objects:   3% (3/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5098360Z remote: Counting objects:   5% (4/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5099876Z remote: Counting objects:   6% (5/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5101383Z remote: Counting objects:   7% (6/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5102877Z remote: Counting objects:   8% (7/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5104317Z remote: Counting objects:  10% (8/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5105762Z remote: Counting objects:  11% (9/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5107397Z remote: Counting objects:  12% (10/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5109145Z remote: Counting objects:  13% (11/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5110612Z remote: Counting objects:  15% (12/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5112080Z remote: Counting objects:  16% (13/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5113566Z remote: Counting objects:  17% (14/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5115064Z remote: Counting objects:  18% (15/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5116531Z remote: Counting objects:  20% (16/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5118207Z remote: Counting objects:  21% (17/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5119657Z remote: Counting objects:  22% (18/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5121103Z remote: Counting objects:  23% (19/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5122546Z remote: Counting objects:  25% (20/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5123994Z remote: Counting objects:  26% (21/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5125440Z remote: Counting objects:  27% (22/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5127036Z remote: Counting objects:  28% (23/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5128511Z remote: Counting objects:  30% (24/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5129961Z remote: Counting objects:  31% (25/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5131746Z remote: Counting objects:  32% (26/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5134695Z remote: Counting objects:  33% (27/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5137838Z remote: Counting objects:  35% (28/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5140058Z remote: Counting objects:  36% (29/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5141650Z remote: Counting objects:  37% (30/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5143789Z remote: Counting objects:  38% (31/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5145372Z remote: Counting objects:  40% (32/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5147034Z remote: Counting objects:  41% (33/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5148508Z remote: Counting objects:  42% (34/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5149980Z remote: Counting objects:  43% (35/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5151440Z remote: Counting objects:  45% (36/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5152904Z remote: Counting objects:  46% (37/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5154383Z remote: Counting objects:  47% (38/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5155840Z remote: Counting objects:  48% (39/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5157458Z remote: Counting objects:  50% (40/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5158929Z remote: Counting objects:  51% (41/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5160369Z remote: Counting objects:  52% (42/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5161821Z remote: Counting objects:  53% (43/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5163274Z remote: Counting objects:  55% (44/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5164723Z remote: Counting objects:  56% (45/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5166170Z remote: Counting objects:  57% (46/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5167817Z remote: Counting objects:  58% (47/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5169259Z remote: Counting objects:  60% (48/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5170700Z remote: Counting objects:  61% (49/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5172148Z remote: Counting objects:  62% (50/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5173607Z remote: Counting objects:  63% (51/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5175046Z remote: Counting objects:  65% (52/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5176488Z remote: Counting objects:  66% (53/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5178100Z remote: Counting objects:  67% (54/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5179806Z remote: Counting objects:  68% (55/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5181293Z remote: Counting objects:  70% (56/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5182734Z remote: Counting objects:  71% (57/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5184177Z remote: Counting objects:  72% (58/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5186174Z remote: Counting objects:  73% (59/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5188134Z remote: Counting objects:  75% (60/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5189931Z remote: Counting objects:  76% (61/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5192290Z remote: Counting objects:  77% (62/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5193886Z remote: Counting objects:  78% (63/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5195341Z remote: Counting objects:  80% (64/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5197513Z remote: Counting objects:  81% (65/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5199419Z remote: Counting objects:  82% (66/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5200954Z remote: Counting objects:  83% (67/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5202416Z remote: Counting objects:  85% (68/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5203845Z remote: Counting objects:  86% (69/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5205287Z remote: Counting objects:  87% (70/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5207124Z remote: Counting objects:  88% (71/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5208999Z remote: Counting objects:  90% (72/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5210507Z remote: Counting objects:  91% (73/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5211959Z remote: Counting objects:  92% (74/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5213390Z remote: Counting objects:  93% (75/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5214811Z remote: Counting objects:  95% (76/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5216250Z remote: Counting objects:  96% (77/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5217886Z remote: Counting objects:  97% (78/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5219318Z remote: Counting objects:  98% (79/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5220742Z remote: Counting objects: 100% (80/80)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5222212Z remote: Counting objects: 100% (80/80), done.        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5223747Z remote: Compressing objects:   1% (1/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5225229Z remote: Compressing objects:   3% (2/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5226695Z remote: Compressing objects:   4% (3/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5228398Z remote: Compressing objects:   6% (4/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5229945Z remote: Compressing objects:   7% (5/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5231411Z remote: Compressing objects:   9% (6/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5232876Z remote: Compressing objects:  10% (7/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5234365Z remote: Compressing objects:  12% (8/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5235839Z remote: Compressing objects:  13% (9/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5237529Z remote: Compressing objects:  15% (10/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5239006Z remote: Compressing objects:  16% (11/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5240862Z remote: Compressing objects:  18% (12/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5242469Z remote: Compressing objects:  20% (13/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5244358Z remote: Compressing objects:  21% (14/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5246414Z remote: Compressing objects:  23% (15/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5248232Z remote: Compressing objects:  24% (16/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5249730Z remote: Compressing objects:  26% (17/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5251204Z remote: Compressing objects:  27% (18/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5252969Z remote: Compressing objects:  29% (19/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5254878Z remote: Compressing objects:  30% (20/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5256663Z remote: Compressing objects:  32% (21/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5258479Z remote: Compressing objects:  33% (22/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5259983Z remote: Compressing objects:  35% (23/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5261467Z remote: Compressing objects:  36% (24/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5262947Z remote: Compressing objects:  38% (25/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5264432Z remote: Compressing objects:  40% (26/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5266416Z remote: Compressing objects:  41% (27/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5268108Z remote: Compressing objects:  43% (28/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5269613Z remote: Compressing objects:  44% (29/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5271094Z remote: Compressing objects:  46% (30/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5272683Z remote: Compressing objects:  47% (31/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5274172Z remote: Compressing objects:  49% (32/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5275794Z remote: Compressing objects:  50% (33/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5277403Z remote: Compressing objects:  52% (34/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5278874Z remote: Compressing objects:  53% (35/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5280565Z remote: Compressing objects:  55% (36/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5282300Z remote: Compressing objects:  56% (37/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5283775Z remote: Compressing objects:  58% (38/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5285368Z remote: Compressing objects:  60% (39/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5286940Z remote: Compressing objects:  61% (40/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5288410Z remote: Compressing objects:  63% (41/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5290121Z remote: Compressing objects:  64% (42/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5291600Z remote: Compressing objects:  66% (43/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5293307Z remote: Compressing objects:  67% (44/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5294765Z remote: Compressing objects:  69% (45/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5296223Z remote: Compressing objects:  70% (46/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5298019Z remote: Compressing objects:  72% (47/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5299513Z remote: Compressing objects:  73% (48/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5301019Z remote: Compressing objects:  75% (49/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5302798Z remote: Compressing objects:  76% (50/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5304925Z remote: Compressing objects:  78% (51/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5307063Z remote: Compressing objects:  80% (52/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5309288Z remote: Compressing objects:  81% (53/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5311855Z remote: Compressing objects:  83% (54/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5314321Z remote: Compressing objects:  84% (55/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5315862Z remote: Compressing objects:  86% (56/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5317638Z remote: Compressing objects:  87% (57/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5319142Z remote: Compressing objects:  89% (58/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5320626Z remote: Compressing objects:  90% (59/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5322097Z remote: Compressing objects:  92% (60/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5323570Z remote: Compressing objects:  93% (61/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5325116Z remote: Compressing objects:  95% (62/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5326569Z remote: Compressing objects:  96% (63/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5328268Z remote: Compressing objects:  98% (64/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5329766Z remote: Compressing objects: 100% (65/65)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5331328Z remote: Compressing objects: 100% (65/65), done.        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5333164Z remote: Total 80 (delta 2), reused 63 (delta 2), pack-reused 0 (from 0)        
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5448317Z From https://github.com/patflynn/vibe
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5450930Z  * [new ref]         5e5641685fa2df1d2a530b8acf334fa1dbee6676 -> pull/29/merge
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5482643Z ##[endgroup]
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5485636Z ##[group]Determining the checkout info
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5489437Z ##[endgroup]
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5492264Z ##[group]Checking out the ref
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5494978Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/29/merge
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5588935Z Note: switching to 'refs/remotes/pull/29/merge'.
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5590582Z 
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5591932Z You are in 'detached HEAD' state. You can look around, make experimental
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5593999Z changes and commit them, and you can discard any commits you make in this
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5597204Z state without impacting any branches by switching back to a branch.
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5599119Z 
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5599974Z If you want to create a new branch to retain commits you create, you may
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5601817Z do so (now or later) by using -c with the switch command. Example:
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5602867Z 
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5603425Z   git switch -c <new-branch-name>
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5604206Z 
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5604711Z Or undo this operation with:
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5605455Z 
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5605911Z   git switch -
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5606631Z 
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5607719Z Turn off this advice by setting config variable advice.detachedHead to false
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5609166Z 
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5610485Z HEAD is now at 5e56416 Merge cd8506b4830b45b7b01d4afc41ec73b389b6fe7e into 0177e754afcbd08161815d57342dab6db89baf6b
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5614587Z ##[endgroup]
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5632795Z [command]/usr/bin/git log -1 --format='%H'
+instrumentation-test	Run actions/checkout@v3	2025-03-29T17:00:54.5655588Z '5e5641685fa2df1d2a530b8acf334fa1dbee6676'
+instrumentation-test	Decode google-services.json	﻿2025-03-29T17:00:54.5886599Z ##[group]Run echo $GOOGLE_SERVICES_JSON_B64 | base64 --decode > app/google-services.json
+instrumentation-test	Decode google-services.json	2025-03-29T17:00:54.5889194Z [36;1mecho $GOOGLE_SERVICES_JSON_B64 | base64 --decode > app/google-services.json[0m
+instrumentation-test	Decode google-services.json	2025-03-29T17:00:54.5891168Z [36;1mecho "google-services.json created successfully."[0m
+instrumentation-test	Decode google-services.json	2025-03-29T17:00:54.5946636Z shell: /usr/bin/bash -e ***0***
+instrumentation-test	Decode google-services.json	2025-03-29T17:00:54.5948064Z env:
+instrumentation-test	Decode google-services.json	2025-03-29T17:00:54.5982999Z   GOOGLE_SERVICES_JSON_B64: ***
+instrumentation-test	Decode google-services.json	2025-03-29T17:00:54.5984203Z ##[endgroup]
+instrumentation-test	Decode google-services.json	2025-03-29T17:00:54.6103905Z google-services.json created successfully.
+instrumentation-test	Set up JDK	﻿2025-03-29T17:00:54.6326251Z ##[group]Run actions/setup-java@v3
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.6327697Z with:
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.6328705Z   distribution: temurin
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.6329853Z   java-version: 17
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.6330894Z   cache: gradle
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.6331927Z   java-package: jdk
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.6333007Z   check-latest: false
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.6334089Z   server-id: github
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.6335183Z   server-username: GITHUB_ACTOR
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.6336392Z   server-password: GITHUB_TOKEN
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.6337714Z   overwrite-settings: true
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.6338861Z   job-status: success
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.6340193Z   token: ***
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.6341203Z ##[endgroup]
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.7898690Z ##[group]Installed distributions
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.7940126Z Resolved Java 17.0.14+7 from tool-cache
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.7941632Z Setting Java 17.0.14+7 as the default
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.7954399Z Creating toolchains.xml for JDK version 17 from temurin
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.8031759Z Writing to /home/runner/.m2/toolchains.xml
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.8033656Z 
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.8034669Z Java configuration:
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.8037012Z   Distribution: temurin
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.8038311Z   Version: 17.0.14+7
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.8040396Z   Path: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.8041685Z 
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.8043203Z ##[endgroup]
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.8060260Z Creating settings.xml with server-id: github
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.8061788Z Writing to /home/runner/.m2/settings.xml
+instrumentation-test	Set up JDK	2025-03-29T17:00:54.9696524Z gradle cache is not found
+instrumentation-test	Grant execute permission for gradlew	﻿2025-03-29T17:00:54.9832508Z ##[group]Run chmod +x gradlew
+instrumentation-test	Grant execute permission for gradlew	2025-03-29T17:00:54.9833840Z [36;1mchmod +x gradlew[0m
+instrumentation-test	Grant execute permission for gradlew	2025-03-29T17:00:54.9890809Z shell: /usr/bin/bash -e ***0***
+instrumentation-test	Grant execute permission for gradlew	2025-03-29T17:00:54.9892066Z env:
+instrumentation-test	Grant execute permission for gradlew	2025-03-29T17:00:54.9893448Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Grant execute permission for gradlew	2025-03-29T17:00:54.9895499Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Grant execute permission for gradlew	2025-03-29T17:00:54.9897396Z ##[endgroup]
+instrumentation-test	Build debug APK and test APK	﻿2025-03-29T17:00:55.0063997Z ##[group]Run ./gradlew assembleDebug assembleDebugAndroidTest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:55.0065767Z [36;1m./gradlew assembleDebug assembleDebugAndroidTest[0m
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:55.0116416Z shell: /usr/bin/bash -e ***0***
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:55.0117888Z env:
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:55.0119245Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:55.0121240Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:55.0122845Z ##[endgroup]
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:55.4988156Z Downloading https://services.gradle.org/distributions/gradle-8.13-bin.zip
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:57.7234224Z .............10%.............20%.............30%.............40%.............50%.............60%.............70%.............80%.............90%.............100%
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:59.0749847Z 
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:59.0751112Z Welcome to Gradle 8.13!
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:59.0751992Z 
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:59.0755197Z Here are the highlights of this release:
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:59.0758197Z  - Daemon JVM auto-provisioning
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:59.0760979Z  - Enhancements for Scala plugin and JUnit testing
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:59.0761816Z  - Improvements for build authors and plugin developers
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:59.0762320Z 
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:59.0763191Z For more details see https://docs.gradle.org/8.13/release-notes.html
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:59.0764430Z 
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:00:59.1741656Z Starting a Gradle Daemon (subsequent builds will be faster)
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:34.3751280Z WARNING: The following problems were found when resolving the SDK location:
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:34.3759716Z Where: sdk.dir property in local.properties file. Problem: Directory does not exist
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:34.3768344Z 
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:35.3778610Z > Task :app:preBuild UP-TO-DATE
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:35.4740332Z > Task :app:preDebugBuild UP-TO-DATE
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:35.4743263Z > Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:35.4745229Z > Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:45.9751101Z > Task :app:dataBindingMergeDependencyArtifactsDebug
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:45.9752025Z > Task :app:generateDebugResValues
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:46.0751838Z > Task :app:generateDebugResources
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:46.0777982Z > Task :app:processDebugGoogleServices
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:47.7739209Z > Task :app:packageDebugResources
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:48.8738888Z > Task :app:mergeDebugResources
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:49.9768574Z > Task :app:parseDebugLocalResources
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:49.9769882Z > Task :app:checkDebugAarMetadata
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:50.3740803Z > Task :app:dataBindingGenBaseClassesDebug
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:50.3742318Z > Task :app:mapDebugSourceSetPaths
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:50.3763905Z > Task :app:createDebugCompatibleScreenManifests
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:50.3765508Z > Task :app:extractDeepLinksDebug
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:50.6746175Z > Task :app:processDebugMainManifest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:50.7741888Z > Task :app:processDebugManifest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:50.7742558Z > Task :app:javaPreCompileDebug
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:50.8767685Z > Task :app:mergeDebugShaders
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:50.8768481Z > Task :app:compileDebugShaders NO-SOURCE
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:50.8769158Z > Task :app:generateDebugAssets UP-TO-DATE
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:50.8769766Z > Task :app:mergeDebugAssets
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:50.8770315Z > Task :app:compressDebugAssets
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:50.8770901Z > Task :app:desugarDebugFileDependencies
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:51.6738661Z > Task :app:processDebugManifestForPackage
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:51.6739909Z > Task :app:checkDebugDuplicateClasses
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:01:53.5748425Z > Task :app:processDebugResources
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:22.5769106Z > Task :app:mergeExtDexDebug
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:33.3760527Z > Task :app:mergeDebugJniLibFolders
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:33.3764409Z > Task :app:mergeLibDexDebug
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:33.5745471Z > Task :app:mergeDebugNativeLibs NO-SOURCE
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:33.5746619Z > Task :app:stripDebugDebugSymbols NO-SOURCE
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:34.6739313Z > Task :app:validateSigningDebug
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:34.6740355Z > Task :app:writeDebugAppMetadata
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:34.7741419Z > Task :app:writeDebugSigningConfigVersions
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:34.7746511Z > Task :app:preDebugAndroidTestBuild SKIPPED
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:36.9756713Z > Task :app:generateDebugAndroidTestResValues
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:36.9759699Z > Task :app:dataBindingMergeDependencyArtifactsDebugAndroidTest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:37.0770356Z > Task :app:generateDebugAndroidTestResources
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:38.7738410Z > Task :app:mapDebugAndroidTestSourceSetPaths
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:38.8739334Z > Task :app:checkDebugAndroidTestAarMetadata
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:38.9783028Z > Task :app:processDebugAndroidTestManifest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:38.9787671Z > Task :app:javaPreCompileDebugAndroidTest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:38.9792147Z > Task :app:mergeDebugAndroidTestShaders
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:38.9793086Z > Task :app:compileDebugAndroidTestShaders NO-SOURCE
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:38.9796597Z > Task :app:generateDebugAndroidTestAssets UP-TO-DATE
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:38.9887905Z > Task :app:mergeDebugAndroidTestAssets
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:38.9889164Z > Task :app:compressDebugAndroidTestAssets
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:39.0738828Z > Task :app:desugarDebugAndroidTestFileDependencies
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:39.3739997Z > Task :app:checkDebugAndroidTestDuplicateClasses
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:39.3745177Z > Task :app:mergeDebugAndroidTestJniLibFolders
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:39.4750673Z > Task :app:mergeDebugAndroidTestResources
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:47.9738119Z > Task :app:compileDebugKotlin
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:50.7757786Z > Task :app:mergeExtDexDebugAndroidTest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:58.9749903Z > Task :app:compileDebugJavaWithJavac
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:59.2737960Z > Task :app:dexBuilderDebug
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:59.4738362Z > Task :app:mergeDebugGlobalSynthetics
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:59.4757745Z > Task :app:processDebugJavaRes
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:59.9750974Z > Task :app:bundleDebugClassesToCompileJar
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:02:59.9753341Z > Task :app:dataBindingGenBaseClassesDebugAndroidTest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:00.1772379Z > Task :app:mergeLibDexDebugAndroidTest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:00.1773540Z > Task :app:mergeProjectDexDebug
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:00.2742635Z > Task :app:mergeDebugAndroidTestNativeLibs NO-SOURCE
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:00.2743890Z > Task :app:stripDebugAndroidTestDebugSymbols NO-SOURCE
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:00.2744757Z > Task :app:validateSigningDebugAndroidTest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:00.2746976Z > Task :app:writeDebugAndroidTestSigningConfigVersions
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:00.9738562Z > Task :app:mergeDebugJavaResource
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:01.0738660Z > Task :app:processDebugAndroidTestResources
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:01.4739117Z > Task :app:packageDebug
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:01.4743949Z > Task :app:createDebugApkListingFileRedirect
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:01.4744596Z > Task :app:assembleDebug
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:02.9743717Z > Task :app:compileDebugAndroidTestKotlin
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:02.9758467Z > Task :app:compileDebugAndroidTestJavaWithJavac NO-SOURCE
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.3745091Z > Task :app:dexBuilderDebugAndroidTest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.4738886Z > Task :app:mergeDebugAndroidTestGlobalSynthetics
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.4744268Z > Task :app:processDebugAndroidTestJavaRes
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.6738275Z > Task :app:mergeProjectDexDebugAndroidTest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.6743175Z > Task :app:mergeDebugAndroidTestJavaResource
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.7753004Z > Task :app:packageDebugAndroidTest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.7758043Z > Task :app:createDebugAndroidTestApkListingFileRedirect
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.7758769Z > Task :app:assembleDebugAndroidTest
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.8738136Z 
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.8749173Z [Incubating] Problems report is available at: file:///home/runner/work/vibe/vibe/build/reports/problems/problems-report.html
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.8751385Z 
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.8768747Z Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.8769615Z 
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.8772338Z You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.8773354Z 
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.8786287Z For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.8788877Z 
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.8789307Z BUILD SUCCESSFUL in 2m 8s
+instrumentation-test	Build debug APK and test APK	2025-03-29T17:03:03.8811010Z 66 actionable tasks: 66 executed
+instrumentation-test	Authenticate to Google Cloud	﻿2025-03-29T17:03:04.2348371Z ##[group]Run google-github-actions/auth@v2
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2348977Z with:
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2366566Z   credentials_json: ***
+instrumentation-test	Authenticate to Google Cloud	
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2367272Z   project_id: ***
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2367729Z   create_credentials_file: true
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2368256Z   export_environment_variables: true
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2368807Z   universe: googleapis.com
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2369287Z   cleanup_credentials: true
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2369773Z   access_token_lifetime: 3600s
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2370450Z   access_token_scopes: https://www.googleapis.com/auth/cloud-platform
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2371177Z   id_token_include_email: false
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2371648Z env:
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2372236Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2373152Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.2374168Z ##[endgroup]
+instrumentation-test	Authenticate to Google Cloud	2025-03-29T17:03:04.3799380Z Created credentials file at "/home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json"
+instrumentation-test	Set up Google Cloud SDK	﻿2025-03-29T17:03:04.4024767Z ##[group]Run google-github-actions/setup-gcloud@v1
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4025430Z with:
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4025880Z   project_id: ***
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4026326Z   skip_install: false
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4026958Z   version: latest
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4027384Z env:
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4027984Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4028961Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4030096Z   CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: /home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4031344Z   GOOGLE_APPLICATION_CREDENTIALS: /home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4032471Z   GOOGLE_GHA_CREDS_PATH: /home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4033331Z   CLOUDSDK_CORE_PROJECT: ***
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4033868Z   CLOUDSDK_PROJECT: ***
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4034355Z   GCLOUD_PROJECT: ***
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4034862Z   GCP_PROJECT: ***
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4035331Z   GOOGLE_CLOUD_PROJECT: ***
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:04.4035815Z ##[endgroup]
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:05.7242508Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/6a28d4d3-1123-46e0-8750-2f6c4e56c280 -f /home/runner/work/_temp/adf44f63-ef07-443d-8e31-2a661038af64
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:22.3621321Z Successfully authenticated
+instrumentation-test	Set up Google Cloud SDK	2025-03-29T17:03:23.4762113Z Successfully set default project
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	﻿2025-03-29T17:03:23.4934679Z ##[group]Run # List available device models first for debugging
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4935248Z [36;1m# List available device models first for debugging[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4935655Z [36;1mecho "Available device models:"[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4936168Z [36;1mgcloud firebase test android models list --format="value(MODEL_ID)" | grep -i pixel[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4936656Z [36;1m[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4937383Z [36;1m# Run tests with newer devices that support minSdkVersion 30+[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4937908Z [36;1mRESULTS_DIR="github-$GITHUB_RUN_ID-$GITHUB_RUN_NUMBER"[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4938375Z [36;1mecho "Using results directory: $RESULTS_DIR"[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4938719Z [36;1m[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4938984Z [36;1mgcloud firebase test android run \[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4939342Z [36;1m  --type instrumentation \[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4939722Z [36;1m  --app app/build/outputs/apk/debug/app-debug.apk \[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4940266Z [36;1m  --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4940882Z [36;1m  --device model=redfin,version=30,locale=en,orientation=portrait \[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4941401Z [36;1m  --device model=oriole,version=31,locale=en,orientation=portrait \[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4941917Z [36;1m  --device model=panther,version=33,locale=en,orientation=portrait \[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4942514Z [36;1m  --results-bucket gs://*** \[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4942881Z [36;1m  --results-dir=$RESULTS_DIR[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4943190Z [36;1m  [0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4943478Z [36;1m# Save the results dir for the next step[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4943874Z [36;1mecho "RESULTS_DIR=$RESULTS_DIR" >> $GITHUB_ENV[0m
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4991254Z shell: /usr/bin/bash -e ***0***
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4991598Z env:
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4991964Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4992511Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4993158Z   CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: /home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4993855Z   GOOGLE_APPLICATION_CREDENTIALS: /home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4994478Z   GOOGLE_GHA_CREDS_PATH: /home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4995198Z   CLOUDSDK_CORE_PROJECT: ***
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4995518Z   CLOUDSDK_PROJECT: ***
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4995819Z   GCLOUD_PROJECT: ***
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4996119Z   GCP_PROJECT: ***
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4996403Z   GOOGLE_CLOUD_PROJECT: ***
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4996946Z   CLOUDSDK_METRICS_ENVIRONMENT: github-actions-setup-gcloud
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4997475Z   CLOUDSDK_METRICS_ENVIRONMENT_VERSION: 1.1.1
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.4997817Z ##[endgroup]
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:23.5068546Z Available device models:
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:24.7221782Z Pixel2
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:24.7223431Z Pixel2.arm
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:24.7224870Z Pixel3
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:24.7225519Z Using results directory: github-14147657413-29
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:25.5317103Z 
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:25.5317792Z Have questions, feedback, or issues? Get support by visiting:
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:25.5318425Z   https://firebase.google.com/support/
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:25.5318722Z 
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:25.8423988Z Uploading [app/build/outputs/apk/debug/app-debug.apk] to Firebase Test Lab...
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:26.9819935Z Uploading [app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk] to Firebase Test Lab...
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:27.2600552Z Raw results will be stored in your GCS bucket at [https://console.developers.google.com/storage/browser/***/github-14147657413-29/]
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:27.2601423Z 
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:27.7109017Z Test [matrix-23zsj5y79vw66] has been created in the Google Cloud.
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:27.7127782Z Creating individual test executions...
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:33.9486980Z ...............................done.
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:34.2468156Z Firebase Test Lab will execute your instrumentation test on 3 device(s). More devices may be added later if flaky test attempts are specified.
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:34.2469707Z 
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:34.2471199Z Test results will be streamed to [ https://console.firebase.google.com/project/***/testlab/histories/bh.a109fff6b0c9e7f0/matrices/6500153910589254218 ].
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:34.3248160Z 
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:46.4237963Z 17:03:34 Test matrix status: Pending:3 
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:03:58.5010764Z 17:03:46 Test matrix status: Pending:2 Running:1 
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:10.6294977Z 17:03:58 Test matrix status: Running:3           
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:22.7100895Z 17:04:10 Test matrix status: Running:3           
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:35.1454567Z 17:04:22 Test matrix status: Running:3           
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.2861987Z 17:04:35 Test matrix status: Running:3           
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.2863160Z 17:04:47 Test matrix status: Finished:3          
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.2863710Z Instrumentation testing complete.
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.2864253Z 
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.2865101Z More details are available at [ https://console.firebase.google.com/project/***/testlab/histories/bh.a109fff6b0c9e7f0/matrices/6500153910589254218 ].
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4659476Z API [toolresults.googleapis.com] not enabled on project [742277119072]. Would 
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4660267Z you like to enable and retry (this will take a few minutes)? (y/N)?  
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4902329Z ERROR: (gcloud.firebase.test.android.run) PERMISSION_DENIED: Cloud Tool Results API has not been used in project 742277119072 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/toolresults.googleapis.com/overview?project=742277119072 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry. This command is authenticated as github-actions-device-testing@***.iam.gserviceaccount.com using the credentials in /home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json, specified by the [auth/credential_file_override] property.
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4907753Z Cloud Tool Results API has not been used in project 742277119072 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/toolresults.googleapis.com/overview?project=742277119072 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4909441Z Google developers console API activation
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4910201Z https://console.developers.google.com/apis/api/toolresults.googleapis.com/overview?project=742277119072
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4910814Z - '@type': type.googleapis.com/google.rpc.ErrorInfo
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4911198Z   domain: googleapis.com
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4911483Z   metadata:
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4912037Z     activationUrl: https://console.developers.google.com/apis/api/toolresults.googleapis.com/overview?project=742277119072
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4912662Z     consumer: projects/742277119072
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4912984Z     containerInfo: '742277119072'
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4913316Z     service: toolresults.googleapis.com
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4913670Z     serviceTitle: Cloud Tool Results API
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.4913996Z   reason: SERVICE_DISABLED
+instrumentation-test	Run instrumentation tests in Firebase Test Lab	2025-03-29T17:04:47.5764883Z ##[error]Process completed with exit code 1.
+instrumentation-test	Download test results	﻿2025-03-29T17:04:47.5812024Z ##[group]Run mkdir -p firebase-test-results
+instrumentation-test	Download test results	2025-03-29T17:04:47.5812509Z [36;1mmkdir -p firebase-test-results[0m
+instrumentation-test	Download test results	2025-03-29T17:04:47.5812958Z [36;1mecho "Attempting to download test results from GCS bucket..."[0m
+instrumentation-test	Download test results	2025-03-29T17:04:47.5813495Z [36;1m# Try to list files in the bucket first to understand what's available[0m
+instrumentation-test	Download test results	2025-03-29T17:04:47.5814035Z [36;1mgsutil ls gs://***/[0m
+instrumentation-test	Download test results	2025-03-29T17:04:47.5814350Z [36;1m[0m
+instrumentation-test	Download test results	2025-03-29T17:04:47.5814658Z [36;1m# List the latest directories (newest first)[0m
+instrumentation-test	Download test results	2025-03-29T17:04:47.5815060Z [36;1mecho "Latest directories in bucket:"[0m
+instrumentation-test	Download test results	2025-03-29T17:04:47.5815548Z [36;1mgsutil ls -l gs://***/ | sort -r | head -10[0m
+instrumentation-test	Download test results	2025-03-29T17:04:47.5815904Z [36;1m[0m
+instrumentation-test	Download test results	2025-03-29T17:04:47.5816418Z [36;1m# Try to download files from the expected location using the saved RESULTS_DIR[0m
+instrumentation-test	Download test results	2025-03-29T17:04:47.5817442Z [36;1mecho "Downloading from gs://***/$RESULTS_DIR/*"[0m
+instrumentation-test	Download test results	2025-03-29T17:04:47.5832876Z [36;1mgsutil -m cp -r gs://***/$RESULTS_DIR/* firebase-test-results/ || echo "No files found in expected location, continuing workflow"[0m
+instrumentation-test	Download test results	2025-03-29T17:04:47.5881203Z shell: /usr/bin/bash -e ***0***
+instrumentation-test	Download test results	2025-03-29T17:04:47.5881538Z env:
+instrumentation-test	Download test results	2025-03-29T17:04:47.5881922Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Download test results	2025-03-29T17:04:47.5882480Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Download test results	2025-03-29T17:04:47.5883119Z   CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: /home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json
+instrumentation-test	Download test results	2025-03-29T17:04:47.5883822Z   GOOGLE_APPLICATION_CREDENTIALS: /home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json
+instrumentation-test	Download test results	2025-03-29T17:04:47.5884470Z   GOOGLE_GHA_CREDS_PATH: /home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json
+instrumentation-test	Download test results	2025-03-29T17:04:47.5884950Z   CLOUDSDK_CORE_PROJECT: ***
+instrumentation-test	Download test results	2025-03-29T17:04:47.5885283Z   CLOUDSDK_PROJECT: ***
+instrumentation-test	Download test results	2025-03-29T17:04:47.5885595Z   GCLOUD_PROJECT: ***
+instrumentation-test	Download test results	2025-03-29T17:04:47.5885885Z   GCP_PROJECT: ***
+instrumentation-test	Download test results	2025-03-29T17:04:47.5886179Z   GOOGLE_CLOUD_PROJECT: ***
+instrumentation-test	Download test results	2025-03-29T17:04:47.5886567Z   CLOUDSDK_METRICS_ENVIRONMENT: github-actions-setup-gcloud
+instrumentation-test	Download test results	2025-03-29T17:04:47.5887223Z   CLOUDSDK_METRICS_ENVIRONMENT_VERSION: 1.1.1
+instrumentation-test	Download test results	2025-03-29T17:04:47.5887565Z ##[endgroup]
+instrumentation-test	Download test results	2025-03-29T17:04:47.5972768Z Attempting to download test results from GCS bucket...
+instrumentation-test	Download test results	2025-03-29T17:04:50.0172706Z gs://***/14147639069-28/
+instrumentation-test	Download test results	2025-03-29T17:04:50.0173407Z gs://***/github-14147657413-29/
+instrumentation-test	Download test results	2025-03-29T17:04:50.1798313Z Latest directories in bucket:
+instrumentation-test	Download test results	2025-03-29T17:04:51.3634467Z                                  gs://***/github-14147657413-29/
+instrumentation-test	Download test results	2025-03-29T17:04:51.3635282Z                                  gs://***/14147639069-28/
+instrumentation-test	Download test results	2025-03-29T17:04:51.3637494Z Downloading from gs://***//*
+instrumentation-test	Download test results	2025-03-29T17:04:52.4719492Z CommandException: No URLs matched: gs://***//*
+instrumentation-test	Download test results	2025-03-29T17:04:52.4978077Z CommandException: 1 file/object could not be transferred.
+instrumentation-test	Download test results	2025-03-29T17:04:52.7021150Z No files found in expected location, continuing workflow
+instrumentation-test	Upload test results	﻿2025-03-29T17:04:52.7068979Z ##[group]Run actions/upload-artifact@v4
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7069344Z with:
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7069604Z   name: firebase-test-results
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7070092Z   path: firebase-test-results
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7070389Z   if-no-files-found: warn
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7070684Z   compression-level: 6
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7070952Z   overwrite: false
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7071220Z   include-hidden-files: false
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7071500Z env:
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7071852Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7072384Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.14-7/x64
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7073007Z   CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: /home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7073849Z   GOOGLE_APPLICATION_CREDENTIALS: /home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7074573Z   GOOGLE_GHA_CREDS_PATH: /home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7075183Z   CLOUDSDK_CORE_PROJECT: ***
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7075504Z   CLOUDSDK_PROJECT: ***
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7075975Z   GCLOUD_PROJECT: ***
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7076321Z   GCP_PROJECT: ***
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7076601Z   GOOGLE_CLOUD_PROJECT: ***
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7077143Z   CLOUDSDK_METRICS_ENVIRONMENT: github-actions-setup-gcloud
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7077562Z   CLOUDSDK_METRICS_ENVIRONMENT_VERSION: 1.1.1
+instrumentation-test	Upload test results	2025-03-29T17:04:52.7077885Z ##[endgroup]
+instrumentation-test	Upload test results	2025-03-29T17:04:52.9317441Z ##[warning]No files were found with the provided path: firebase-test-results. No artifacts will be uploaded.
+instrumentation-test	Post Authenticate to Google Cloud	﻿2025-03-29T17:04:52.9442593Z Post job cleanup.
+instrumentation-test	Post Authenticate to Google Cloud	2025-03-29T17:04:53.0301703Z Removed exported credentials at "/home/runner/work/vibe/vibe/gha-creds-c82332522c7ec793.json".
+instrumentation-test	Post Set up JDK	﻿2025-03-29T17:04:53.0400371Z Post job cleanup.
+instrumentation-test	Post Run actions/checkout@v3	﻿2025-03-29T17:04:53.1748898Z Post job cleanup.
+instrumentation-test	Post Run actions/checkout@v3	2025-03-29T17:04:53.2526220Z [command]/usr/bin/git version
+instrumentation-test	Post Run actions/checkout@v3	2025-03-29T17:04:53.2566713Z git version 2.49.0
+instrumentation-test	Post Run actions/checkout@v3	2025-03-29T17:04:53.2614236Z Temporarily overriding HOME='/home/runner/work/_temp/3d2a33ec-8f65-49f7-9022-95801b94f15e' before making global git config changes
+instrumentation-test	Post Run actions/checkout@v3	2025-03-29T17:04:53.2615712Z Adding repository directory to the temporary git global config as a safe directory
+instrumentation-test	Post Run actions/checkout@v3	2025-03-29T17:04:53.2619720Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/vibe/vibe
+instrumentation-test	Post Run actions/checkout@v3	2025-03-29T17:04:53.2657938Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+instrumentation-test	Post Run actions/checkout@v3	2025-03-29T17:04:53.2691420Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+instrumentation-test	Post Run actions/checkout@v3	2025-03-29T17:04:53.2956386Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+instrumentation-test	Post Run actions/checkout@v3	2025-03-29T17:04:53.2981033Z http.https://github.com/.extraheader
+instrumentation-test	Post Run actions/checkout@v3	2025-03-29T17:04:53.2993471Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+instrumentation-test	Post Run actions/checkout@v3	2025-03-29T17:04:53.3026553Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+instrumentation-test	Complete job	﻿2025-03-29T17:04:53.3396646Z Cleaning up orphan processes
+instrumentation-test	Complete job	2025-03-29T17:04:53.3733576Z Terminate orphan process: pid (1904) (java)
+instrumentation-test	Complete job	2025-03-29T17:04:53.3760296Z Terminate orphan process: pid (2086) (java)
