@@ -29,3 +29,5 @@ captures/
 
 #Generated files
 gradle-wrapper.properties
+/app/debug/
+/app/release/
