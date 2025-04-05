@@ -166,6 +166,7 @@ jobs:
             
             echo "user_fraction=$NUMERIC_FRACTION" >> $GITHUB_OUTPUT
             echo "percentage=$PERCENTAGE" >> $GITHUB_OUTPUT
+            echo "is_production=true" >> $GITHUB_OUTPUT
             
             # For production with partial rollout, use 'inProgress' status
             if (( $(echo "$NUMERIC_FRACTION < 0.999" | bc -l) )); then
@@ -174,22 +175,36 @@ jobs:
               echo "status=completed" >> $GITHUB_OUTPUT
             fi
           else
-            echo "user_fraction=null" >> $GITHUB_OUTPUT
+            echo "user_fraction=0" >> $GITHUB_OUTPUT  # Changed from 'null' to '0'
             echo "percentage=0" >> $GITHUB_OUTPUT
+            echo "is_production=false" >> $GITHUB_OUTPUT
             echo "status=completed" >> $GITHUB_OUTPUT
           fi
 
-      # Upload to Play Store
-      - name: Upload to Play Store
+      # For production track with staged rollout
+      - name: Upload to Play Store (Production with staged rollout)
+        if: steps.release_params.outputs.is_production == 'true'
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJson: ${{ steps.auth.outputs.credentials_file_path }}
           packageName: dev.broken.app.vibe
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: ${{ env.TRACK }}
-          # Only set userFraction for production and use the numeric value
           userFraction: ${{ steps.release_params.outputs.user_fraction }}
-          # Set status based on whether it's a staged rollout
+          status: ${{ steps.release_params.outputs.status }}
+          releaseName: ${{ env.VERSION_NAME }}
+          mappingFile: app/build/outputs/mapping/release/mapping.txt
+          whatsNewDirectory: app/src/main/play/release-notes
+          
+      # For other tracks (internal, alpha, beta)
+      - name: Upload to Play Store (Other tracks)
+        if: steps.release_params.outputs.is_production != 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: ${{ steps.auth.outputs.credentials_file_path }}
+          packageName: dev.broken.app.vibe
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          track: ${{ env.TRACK }}
           status: ${{ steps.release_params.outputs.status }}
           releaseName: ${{ env.VERSION_NAME }}
           mappingFile: app/build/outputs/mapping/release/mapping.txt
