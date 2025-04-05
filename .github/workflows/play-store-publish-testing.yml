@@ -1,4 +1,4 @@
-name: Play Store Publishing
+name: Play Store Testing Tracks
 
 on:
   # Manual trigger with version parameters
@@ -11,7 +11,7 @@ on:
         description: 'Version code (integer)'
         required: true
       track:
-        description: 'Release track'
+        description: 'Testing track'
         required: true
         default: 'internal'
         type: choice
@@ -19,16 +19,11 @@ on:
           - internal
           - alpha
           - beta
-          - production
-      userFraction:
-        description: 'User fraction for staged rollout (production only, e.g., 0.1 for 10%)'
-        required: false
-        default: '0.1'
       releaseNotes:
         description: 'Release notes (markdown)'
         required: false
       
-  # Triggered when a release is created
+  # Triggered when a release is created with testing tag pattern
   release:
     types: [created]
 
@@ -67,8 +62,6 @@ jobs:
           echo $GOOGLE_SERVICES_JSON_B64 | base64 --decode > app/google-services.json
           echo "google-services.json created successfully."
       
-# We no longer need the PLAY_CONFIG_JSON secret as we're using Workload Identity Federation
-      
       # Grant execute permission for gradlew
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -81,7 +74,6 @@ jobs:
             echo "VERSION_NAME=${{ github.event.inputs.versionName }}" >> $GITHUB_ENV
             echo "VERSION_CODE=${{ github.event.inputs.versionCode }}" >> $GITHUB_ENV
             echo "TRACK=${{ github.event.inputs.track }}" >> $GITHUB_ENV
-            echo "USER_FRACTION=${{ github.event.inputs.userFraction }}" >> $GITHUB_ENV
           else
             # Extract from GitHub release tag (assumes format vX.Y.Z or X.Y.Z)
             TAG_NAME="${{ github.event.release.tag_name }}"
@@ -94,7 +86,6 @@ jobs:
             echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
             echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
             echo "TRACK=internal" >> $GITHUB_ENV  # Default to internal for auto releases
-            echo "USER_FRACTION=0.1" >> $GITHUB_ENV  # Default to 10% for staged rollouts
           fi
       
       # Update version in build.gradle
@@ -142,7 +133,7 @@ jobs:
           elif [[ "${{ github.event_name }}" == "release" && -n "${{ github.event.release.body }}" ]]; then
             echo "${{ github.event.release.body }}" > app/src/main/play/release-notes/en-US/default.txt
           else
-            echo "New version ${{ env.VERSION_NAME }}" > app/src/main/play/release-notes/en-US/default.txt
+            echo "Testing version ${{ env.VERSION_NAME }}" > app/src/main/play/release-notes/en-US/default.txt
           fi
       
       # Authenticate to Google Cloud
@@ -153,59 +144,15 @@ jobs:
           workload_identity_provider: 'projects/742277119072/locations/global/workloadIdentityPools/github-workflows/providers/github-pool'
           service_account: 'github-actions-play-publisher@broken-vibe.iam.gserviceaccount.com'
 
-      # Process user fraction and status properly
-      - name: Set release parameters
-        id: release_params
-        run: |
-          if [[ "${{ env.TRACK }}" == "production" ]]; then
-            # Convert to numeric value by using bc for floating point arithmetic
-            NUMERIC_FRACTION=$(echo "${{ env.USER_FRACTION }}" | bc)
-            
-            # Calculate the percentage for the message
-            PERCENTAGE=$(echo "$NUMERIC_FRACTION * 100" | bc)
-            
-            echo "user_fraction=$NUMERIC_FRACTION" >> $GITHUB_OUTPUT
-            echo "percentage=$PERCENTAGE" >> $GITHUB_OUTPUT
-            echo "is_production=true" >> $GITHUB_OUTPUT
-            
-            # For production with partial rollout, use 'inProgress' status
-            if (( $(echo "$NUMERIC_FRACTION < 0.999" | bc -l) )); then
-              echo "status=inProgress" >> $GITHUB_OUTPUT
-            else
-              echo "status=completed" >> $GITHUB_OUTPUT
-            fi
-          else
-            echo "user_fraction=0" >> $GITHUB_OUTPUT  # Changed from 'null' to '0'
-            echo "percentage=0" >> $GITHUB_OUTPUT
-            echo "is_production=false" >> $GITHUB_OUTPUT
-            echo "status=completed" >> $GITHUB_OUTPUT
-          fi
-
-      # For production track with staged rollout
-      - name: Upload to Play Store (Production with staged rollout)
-        if: steps.release_params.outputs.is_production == 'true'
+      # Upload to Play Store
+      - name: Upload to Play Store
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJson: ${{ steps.auth.outputs.credentials_file_path }}
           packageName: dev.broken.app.vibe
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: ${{ env.TRACK }}
-          userFraction: ${{ steps.release_params.outputs.user_fraction }}
-          status: ${{ steps.release_params.outputs.status }}
-          releaseName: ${{ env.VERSION_NAME }}
-          mappingFile: app/build/outputs/mapping/release/mapping.txt
-          whatsNewDirectory: app/src/main/play/release-notes
-          
-      # For other tracks (internal, alpha, beta)
-      - name: Upload to Play Store (Other tracks)
-        if: steps.release_params.outputs.is_production != 'true'
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJson: ${{ steps.auth.outputs.credentials_file_path }}
-          packageName: dev.broken.app.vibe
-          releaseFiles: app/build/outputs/bundle/release/app-release.aab
-          track: ${{ env.TRACK }}
-          status: ${{ steps.release_params.outputs.status }}
+          status: completed
           releaseName: ${{ env.VERSION_NAME }}
           mappingFile: app/build/outputs/mapping/release/mapping.txt
           whatsNewDirectory: app/src/main/play/release-notes
@@ -219,8 +166,6 @@ jobs:
           body: |
             ## 🚀 Play Store Deployment Success!
             
-            Version **${{ env.VERSION_NAME }}** (code: ${{ env.VERSION_CODE }}) has been successfully uploaded to the **${{ env.TRACK }}** track.
-            
-            ${{ env.TRACK == 'production' && steps.release_params.outputs.user_fraction != 'null' && format('This is a staged rollout to {0}% of users.', steps.release_params.outputs.percentage) || '' }}
+            Version **${{ env.VERSION_NAME }}** (code: ${{ env.VERSION_CODE }}) has been successfully uploaded to the **${{ env.TRACK }}** testing track.
             
             The app should be available for testers soon. Check the Google Play Console for status updates.
