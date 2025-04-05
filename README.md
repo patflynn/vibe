@@ -11,6 +11,20 @@ An ultra simple, free meditation app for Android.
 - Keeps screen active during meditation with wake lock
 - Minimal permissions required (only vibration)
 
+## Screenshots
+
+<div align="center">
+  <!-- Screenshots will be automatically updated by CI workflow -->
+  <p>Screenshots will appear here after the first workflow run</p>
+</div>
+
+## App Demo
+
+<div align="center">
+  <!-- Demo video will be automatically updated by CI workflow -->
+  <p>App demo will appear here after the first workflow run</p>
+</div>
+
 ## Download
 
 You can download the latest APK directly from the [GitHub Releases](https://github.com/patflynn/vibe/releases) page.
