@@ -43,6 +43,9 @@ class ScreenshotCaptureTest {
         // Configure test environment for predictable screenshots
         TestHelpers.configureForTesting()
         
+        // Initialize screenshot helper
+        ScreenshotHelper.initialize()
+        
         // Create screenshot directory if it doesn't exist
         createScreenshotDirectory()
         

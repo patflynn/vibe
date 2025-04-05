@@ -29,6 +29,9 @@ class AppDemoRecordingTest {
         // Configure test environment for demo recording
         TestHelpers.configureForTesting()
         
+        // Initialize screenshot helper
+        ScreenshotHelper.initialize()
+        
         // Launch the main activity
         activityScenario = ActivityScenario.launch(MainActivity::class.java)
     }

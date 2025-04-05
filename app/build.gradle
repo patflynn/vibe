@@ -18,8 +18,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
         
-        // Add additional runner for screenshot tests
-        testInstrumentationRunnerForScreenshots "dev.broken.app.vibe.screenshots.ScreenshotTestRunner"
+        // Add parameters for screenshot tests
+        testInstrumentationRunnerArguments captureScreenshots: 'true'
     }
     
     // Define signing configuration only for release builds

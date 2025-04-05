@@ -10,45 +10,40 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * Custom test runner for capturing screenshots and recordings
- * Used to generate assets for the README and documentation
+ * This class is an extension of the test runner for the screenshot tests
+ * but we're not actually using it as the main runner to avoid CI issues.
+ * It serves as a helper class for screenshot organization.
  */
-class ScreenshotTestRunner : AndroidJUnitRunner() {
+class ScreenshotHelper {
 
     companion object {
-        private const val TAG = "ScreenshotTestRunner"
+        private const val TAG = "ScreenshotHelper"
         private const val SCREENSHOTS_ARG = "captureScreenshots"
-    }
-
-    override fun onCreate(arguments: Bundle) {
-        val newArgs = Bundle(arguments)
-        val captureScreenshots = arguments.getString(SCREENSHOTS_ARG, "true")
-
-        // Set test-specific flags if needed
-        Log.d(TAG, "Creating ScreenshotTestRunner with captureScreenshots=$captureScreenshots")
-
-        // Make test output more organized by using a timestamp for this test run
-        val timestamp = getTimestampString()
-        newArgs.putString("timestamp", timestamp)
         
-        // Create directories for screenshots/recordings if they don't exist
-        createOutputDirectories()
-        
-        super.onCreate(newArgs)
-    }
-
-    override fun finish(resultCode: Int, results: Bundle) {
-        Log.i(TAG, "ScreenshotTestRunner finished with resultCode=$resultCode")
-        
-        // Process and move files to the correct location if needed
-        try {
-            collectScreenshotAssets()
-        } catch (e: Exception) {
-            Log.e(TAG, "Error collecting screenshot assets: ${e.message}")
+        /**
+         * Initialize screenshot directories and settings
+         */
+        fun initialize() {
+            // Get timestamp for organizing output
+            val timestamp = getTimestampString()
+            Log.d(TAG, "Initializing ScreenshotHelper with timestamp=$timestamp")
+            
+            // Create output directories
+            createOutputDirectories()
         }
         
-        super.finish(resultCode, results)
-    }
+        /**
+         * Collect and process screenshot assets after tests
+         */
+        fun collectAssets() {
+            Log.i(TAG, "Collecting screenshot assets")
+            
+            try {
+                processScreenshotAssets()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error collecting screenshot assets: ${e.message}")
+            }
+        }
 
     /**
      * Create output directories for screenshots and recordings
@@ -74,10 +69,10 @@ class ScreenshotTestRunner : AndroidJUnitRunner() {
     }
 
     /**
-     * Collect and organize all screenshot assets after tests complete
+     * Process all screenshot assets after tests complete
      */
-    private fun collectScreenshotAssets() {
-        Log.d(TAG, "Collecting screenshot assets")
+    private fun processScreenshotAssets() {
+        Log.d(TAG, "Processing screenshot assets")
         
         // Assets will be collected automatically by the CI process from their
         // output locations, so this is just a placeholder for any additional
