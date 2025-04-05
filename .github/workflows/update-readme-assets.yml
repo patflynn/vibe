@@ -1,0 +1,303 @@
+name: Update README Assets
+
+on:
+  # Run on pushes to main
+  push:
+    branches: [ main ]
+    paths:
+      - '**.kt'
+      - '**.xml'
+      - 'gradle/**'
+      - '**.gradle'
+  
+  # Run on workflow dispatch
+  workflow_dispatch:
+
+  # Run on a schedule (weekly)
+  schedule:
+    - cron: '0 0 * * 0'  # At 00:00 on Sunday
+
+# Permissions needed for GitHub token
+permissions:
+  contents: write    # For committing to the repository
+  pull-requests: write  # For creating PRs
+
+jobs:
+  generate-assets:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Check out the repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      # Set up JDK
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+      
+      # Set up Android SDK
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        
+      # Grant execute permission for gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      # Build debug APK
+      - name: Build debug APK
+        run: ./gradlew assembleDebug
+      
+      # Build test APK
+      - name: Build test APK
+        run: ./gradlew assembleDebugAndroidTest
+      
+      # Run tests using Firebase Test Lab
+      - name: Run tests on Firebase Test Lab
+        env:
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCLOUD_SERVICE_KEY }}
+        run: |
+          # Set up gcloud auth
+          echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/gcloud-service-key.json
+          gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
+          gcloud --quiet config set project broken-vibe
+          
+          # Run the tests on Firebase Test Lab with specific test class
+          gcloud firebase test android run \
+            --type instrumentation \
+            --app app/build/outputs/apk/debug/app-debug.apk \
+            --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            --device model=Pixel2,version=30,locale=en,orientation=portrait \
+            --timeout 5m \
+            --results-bucket cloud-test-${GITHUB_REPOSITORY_OWNER}-${GITHUB_REPOSITORY#*/} \
+            --results-dir=${GITHUB_REF_NAME}_${GITHUB_RUN_NUMBER} \
+            --environment-variables clearPackageData=true \
+            --test-targets "class dev.broken.app.vibe.EspressoScreenshotTest"
+          
+          # Create directories for artifacts
+          mkdir -p screenshots
+          mkdir -p recordings
+          
+          # Download artifacts from Google Cloud Storage
+          TEST_DIR=${GITHUB_REF_NAME}_${GITHUB_RUN_NUMBER}
+          BUCKET_PATH="gs://cloud-test-${GITHUB_REPOSITORY_OWNER}-${GITHUB_REPOSITORY#*/}/${TEST_DIR}"
+          
+          # List artifacts to understand the structure
+          echo "Listing Firebase Test Lab artifacts..."
+          gsutil ls -la ${BUCKET_PATH}
+          
+          # Copy screenshots - they come from Espresso tests
+          echo "Downloading screenshots..."
+          gsutil -m cp -r ${BUCKET_PATH}/*/artifacts/screenshots ./screenshots || true
+          # As a fallback, try to copy all PNG files
+          gsutil -m cp -r "${BUCKET_PATH}/**/*.png" ./screenshots/ || true
+          
+          # Copy video recording
+          echo "Downloading video recording..."
+          gsutil -m cp -r ${BUCKET_PATH}/*/artifacts/video.mp4 ./recordings/ || true
+          # As a fallback, try to look for all MP4 files
+          gsutil -m cp -r "${BUCKET_PATH}/**/*.mp4" ./recordings/ || true
+          
+          # Show what we've downloaded
+          echo "Downloaded artifacts:"
+          find ./screenshots -type f | sort
+          find ./recordings -type f | sort
+      
+      # Process the screenshots and videos
+      - name: Process assets
+        run: |
+          # Create assets directory in the repo
+          mkdir -p assets/screenshots
+          mkdir -p assets/videos
+          
+          # Create a timestamp for versioning
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          
+          # Process and rename screenshots from Firebase Test Lab
+          # Find all PNG files and try to categorize them based on filename patterns
+          echo "Processing screenshots..."
+          
+          # Initialize variables to track if we've found each type of screenshot
+          found_default=false
+          found_running=false
+          found_20min=false
+          
+          # First try using the name patterns from our test file
+          find ./screenshots -type f -name "*.png" | while read file; do
+            echo "Found screenshot: $file"
+            # Try to identify which test created this screenshot
+            if [[ "$file" == *"captureMainScreenDefault"* || "$file" == *"main_screen_default"* ]]; then
+              cp "$file" "./assets/screenshots/main_screen_default_${TIMESTAMP}.png"
+              found_default=true
+              echo "Identified as main screen default"
+            elif [[ "$file" == *"captureMainScreenTimerRunning"* || "$file" == *"main_screen_timer_running"* ]]; then
+              cp "$file" "./assets/screenshots/main_screen_timer_running_${TIMESTAMP}.png"
+              found_running=true
+              echo "Identified as timer running screen"
+            elif [[ "$file" == *"captureDifferentTimerDurations"* || "$file" == *"main_screen_20min"* ]]; then
+              cp "$file" "./assets/screenshots/main_screen_20min_${TIMESTAMP}.png"
+              found_20min=true
+              echo "Identified as 20min timer screen"
+            else
+              # For unidentified files, use a numeric order approach
+              if [[ "$found_default" == "false" ]]; then
+                cp "$file" "./assets/screenshots/main_screen_default_${TIMESTAMP}.png"
+                found_default=true
+                echo "Using as main screen default (fallback)"
+              elif [[ "$found_running" == "false" ]]; then
+                cp "$file" "./assets/screenshots/main_screen_timer_running_${TIMESTAMP}.png"
+                found_running=true
+                echo "Using as timer running screen (fallback)"
+              elif [[ "$found_20min" == "false" ]]; then
+                cp "$file" "./assets/screenshots/main_screen_20min_${TIMESTAMP}.png"
+                found_20min=true
+                echo "Using as 20min timer screen (fallback)"
+              else
+                # Copy remaining screenshots with timestamp
+                BASENAME=$(basename "$file" .png)
+                cp "$file" "./assets/screenshots/${BASENAME}_${TIMESTAMP}.png"
+                echo "Saved as extra screenshot"
+              fi
+            fi
+          done
+          
+          # If we're missing any screenshots, create placeholder images
+          if [[ "$found_default" == "false" ]]; then
+            echo "Missing default screen screenshot - creating placeholder"
+            echo "Default Screen Placeholder" > "./assets/screenshots/main_screen_default_${TIMESTAMP}.png"
+          fi
+          
+          if [[ "$found_running" == "false" ]]; then
+            echo "Missing timer running screenshot - creating placeholder"
+            echo "Timer Running Placeholder" > "./assets/screenshots/main_screen_timer_running_${TIMESTAMP}.png"
+          fi
+          
+          if [[ "$found_20min" == "false" ]]; then
+            echo "Missing 20min timer screenshot - creating placeholder"
+            echo "20min Timer Placeholder" > "./assets/screenshots/main_screen_20min_${TIMESTAMP}.png"
+          fi
+          
+          # List all processed screenshots
+          echo "Processed screenshots:"
+          find ./assets/screenshots -type f | sort
+          
+          # Copy the video from Firebase Test Lab
+          echo "Processing video..."
+          VIDEO_SOURCE=$(find ./recordings -type f -name "*.mp4" | head -n 1)
+          if [ -n "$VIDEO_SOURCE" ]; then
+            echo "Found video: $VIDEO_SOURCE"
+            cp "$VIDEO_SOURCE" "./assets/videos/app_demo_${TIMESTAMP}.mp4"
+            
+            # Convert video to GIF for the README
+            echo "Converting video to GIF..."
+            sudo apt-get update && sudo apt-get install -y ffmpeg
+            ffmpeg -i "./assets/videos/app_demo_${TIMESTAMP}.mp4" -vf "fps=10,scale=320:-1:flags=lanczos" "./assets/videos/app_demo_${TIMESTAMP}.gif"
+            
+            # Create a latest version for consistent README links
+            cp "./assets/videos/app_demo_${TIMESTAMP}.gif" "./assets/videos/app_demo.gif"
+          else
+            echo "No video found - creating placeholder"
+            mkdir -p ./assets/videos
+            echo "App Demo Video Placeholder" > "./assets/videos/app_demo.gif"
+          fi
+      
+      # Update the README with the new assets
+      - name: Update README
+        run: |
+          # Create readme_updated.md as a copy of the original
+          cp README.md readme_updated.md
+          
+          # Create latest symlinks for consistent paths
+          echo "Creating latest links for screenshots..."
+          for TYPE in main_screen_default main_screen_timer_running main_screen_20min; do
+            LATEST=$(find ./assets/screenshots -name "${TYPE}_*.png" | sort -r | head -n 1)
+            if [ -n "$LATEST" ]; then
+              echo "Setting $TYPE latest to: $LATEST"
+              cp "$LATEST" "./assets/screenshots/${TYPE}_latest.png"
+            fi
+          done
+          
+          # Check if we have the screenshots section already
+          if grep -q "## Screenshots" readme_updated.md; then
+            # Replace the existing screenshots section
+            sed -i '/## Screenshots/,/## App Demo/c\## Screenshots\n\n<div align="center">\n  <img src="assets/screenshots/main_screen_default_latest.png" width="280" alt="Default Screen" />\n  <img src="assets/screenshots/main_screen_timer_running_latest.png" width="280" alt="Timer Running" />\n  <img src="assets/screenshots/main_screen_20min_latest.png" width="280" alt="20 Minute Timer" />\n</div>' readme_updated.md
+            
+            # Replace the app demo section
+            sed -i '/## App Demo/,/## Download/c\## App Demo\n\n<div align="center">\n  <img src="assets/videos/app_demo.gif" width="280" alt="App Demo" />\n</div>\n\n## Download' readme_updated.md
+          else
+            # Add the screenshots section before "Download"
+            sed -i '/## Download/i ## Screenshots\n\n<div align="center">\n  <img src="assets/screenshots/main_screen_default_latest.png" width="280" alt="Default Screen" />\n  <img src="assets/screenshots/main_screen_timer_running_latest.png" width="280" alt="Timer Running" />\n  <img src="assets/screenshots/main_screen_20min_latest.png" width="280" alt="20 Minute Timer" />\n</div>\n\n## App Demo\n\n<div align="center">\n  <img src="assets/videos/app_demo.gif" width="280" alt="App Demo" />\n</div>\n' readme_updated.md
+          fi
+          
+          # Print differences for logging
+          echo "README changes:"
+          diff README.md readme_updated.md || true
+          
+          # Replace the original README
+          mv readme_updated.md README.md
+      
+      # Ensure asset directories are included in the commit
+      - name: Ensure asset directories exist
+        run: |
+          # Create .gitkeep files to ensure directories are tracked
+          mkdir -p assets/screenshots
+          mkdir -p assets/videos
+          touch assets/screenshots/.gitkeep
+          touch assets/videos/.gitkeep
+      
+      # Create a branch and PR with the updated assets
+      - name: Create PR with updated assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Set Git user
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          
+          # Get current date for branch name
+          DATE=$(date +'%Y%m%d')
+          BRANCH_NAME="update-readme-assets-${DATE}"
+          
+          # Check if we have changes to commit
+          if [[ -z "$(git status --porcelain assets/ README.md)" ]]; then
+            echo "No changes to assets or README. Skipping PR creation."
+            exit 0
+          fi
+          
+          # Create a new branch
+          git checkout -b $BRANCH_NAME
+          
+          # Add and commit changes
+          git add assets/ README.md
+          git commit -m "Update README screenshots and demo video [skip ci]"
+          
+          # Push the branch
+          git push -u origin $BRANCH_NAME
+          
+          # Check if a PR already exists for this branch
+          existing_pr=$(gh pr list --head $BRANCH_NAME --json number -q '.[0].number')
+          if [[ -n "$existing_pr" ]]; then
+            echo "PR #$existing_pr already exists for branch $BRANCH_NAME. Skipping PR creation."
+            exit 0
+          fi
+          
+          # Create a PR
+          gh pr create --title "Update README screenshots and demo video" \
+            --body "## Auto-generated README Assets Update
+            
+            This PR updates the screenshots and demo video in the README to reflect the current state of the app.
+            
+            ### Changes:
+            - Updated app screenshots from Firebase Test Lab
+            - Updated app demo video/GIF from Firebase Test Lab recording
+            - Updated README references
+            
+            This PR was automatically generated by the update-readme-assets workflow.
+            
+            Closes #46
+            " \
+            --base main \
+            --head $BRANCH_NAME

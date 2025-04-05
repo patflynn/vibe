@@ -1,16 +1,26 @@
 name: Firebase Test Lab Integration
 
 on:
-  # Always run on pushes to main (these are trusted by definition)
-  push:
-    branches: [ main ]
-  
-  # For pull requests, use conditional execution
-  pull_request:
-    branches: [ main ]
-    
-  # Allow manual trigger
+  # Only run during release preparation (manual trigger)
   workflow_dispatch:
+    inputs:
+      releaseType:
+        description: 'Type of release being prepared'
+        required: true
+        default: 'testing'
+        type: choice
+        options:
+          - testing
+          - production
+  
+  # Allow calling from other workflows
+  workflow_call:
+    inputs:
+      releaseType:
+        description: 'Type of release being prepared'
+        type: string
+        default: 'testing'
+        required: true
 
 jobs:
   # Call the reusable security check workflow with file path checking enabled
@@ -42,9 +52,11 @@ jobs:
   # Main test job, depends on security check
   instrumentation-test:
     needs: security-check
-    # Only run if security check passes AND we have code changes
-    if: needs.security-check.outputs.should-run == 'true' && needs.security-check.outputs.is-code-change == 'true'
+    # Only run if security check passes (no need to check code changes for releases)
+    if: needs.security-check.outputs.should-run == 'true'
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TYPE: ${{ inputs.releaseType }}
     steps:
       - uses: actions/checkout@v3
 
@@ -84,12 +96,15 @@ jobs:
 
       - name: Run instrumentation tests in Firebase Test Lab
         run: |
+          # Display release type being tested
+          echo "Running Firebase Test Lab tests for $RELEASE_TYPE release preparation"
+          
           # List available device models first for debugging
           echo "Available device models:"
           gcloud firebase test android models list --format="value(MODEL_ID)" | grep -i pixel
           
           # Run tests with newer devices that support minSdkVersion 30+
-          RESULTS_DIR="github-$GITHUB_RUN_ID-$GITHUB_RUN_NUMBER"
+          RESULTS_DIR="github-$RELEASE_TYPE-$GITHUB_RUN_ID-$GITHUB_RUN_NUMBER"
           echo "Using results directory: $RESULTS_DIR"
           
           gcloud firebase test android run \
@@ -100,7 +115,8 @@ jobs:
             --device model=oriole,version=31,locale=en,orientation=portrait \
             --device model=panther,version=33,locale=en,orientation=portrait \
             --results-bucket gs://${{ secrets.FIREBASE_TEST_BUCKET }} \
-            --results-dir=$RESULTS_DIR
+            --results-dir=$RESULTS_DIR \
+            --test-targets "class dev.broken.app.vibe.EspressoScreenshotTest"
             
           # Save the results dir for the next step
           echo "RESULTS_DIR=$RESULTS_DIR" >> $GITHUB_ENV

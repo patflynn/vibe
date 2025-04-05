@@ -17,6 +17,9 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
+        
+        // Add parameters for screenshot tests
+        testInstrumentationRunnerArguments captureScreenshots: 'true'
     }
     
     // Define signing configuration only for release builds
@@ -109,6 +112,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.6.1'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.6.1'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
+    
+    // Screenshot testing
+    androidTestImplementation 'androidx.test:runner:1.6.2'
+    androidTestImplementation 'tools.fastlane:screengrab:2.1.1'
     
     // Test orchestrator
     androidTestUtil 'androidx.test:orchestrator:1.5.1'
