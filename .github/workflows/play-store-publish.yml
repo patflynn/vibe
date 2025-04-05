@@ -42,6 +42,10 @@ jobs:
     # Only run if security check passes
     if: needs.security-check.outputs.should-run == 'true'
     runs-on: ubuntu-latest
+    # Required for OIDC authentication with Google Cloud
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
       - uses: actions/checkout@v4
         with:
