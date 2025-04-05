@@ -174,6 +174,6 @@ jobs:
             
             Version **${{ env.VERSION_NAME }}** (code: ${{ env.VERSION_CODE }}) has been successfully uploaded to the **${{ env.TRACK }}** track.
             
-            ${{ env.TRACK == 'production' && env.USER_FRACTION < 1.0 && format('This is a staged rollout to {0}% of users.', env.USER_FRACTION * 100) || '' }}
+            ${{ env.TRACK == 'production' && env.USER_FRACTION < 1.0 && format('This is a staged rollout to {0}% of users.', fromJSON(env.USER_FRACTION) * 100) || '' }}
             
             The app should be available for testers soon. Check the Google Play Console for status updates.
