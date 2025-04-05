@@ -23,7 +23,7 @@ on:
       userFraction:
         description: 'User fraction for staged rollout (production only, e.g., 0.1 for 10%)'
         required: false
-        default: '1.0'
+        default: '0.1'
       releaseNotes:
         description: 'Release notes (markdown)'
         required: false
@@ -94,7 +94,7 @@ jobs:
             echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
             echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
             echo "TRACK=internal" >> $GITHUB_ENV  # Default to internal for auto releases
-            echo "USER_FRACTION=1.0" >> $GITHUB_ENV
+            echo "USER_FRACTION=0.1" >> $GITHUB_ENV  # Default to 10% for staged rollouts
           fi
       
       # Update version in build.gradle
@@ -153,16 +153,24 @@ jobs:
           workload_identity_provider: 'projects/742277119072/locations/global/workloadIdentityPools/github-workflows/providers/github-pool'
           service_account: 'github-actions-play-publisher@broken-vibe.iam.gserviceaccount.com'
 
-      # Process user fraction properly
-      - name: Set user fraction value
-        id: user_fraction
+      # Process user fraction and status properly
+      - name: Set release parameters
+        id: release_params
         run: |
           if [[ "${{ env.TRACK }}" == "production" ]]; then
             # Convert to numeric value by using bc for floating point arithmetic
             NUMERIC_FRACTION=$(echo "${{ env.USER_FRACTION }}" | bc)
-            echo "value=$NUMERIC_FRACTION" >> $GITHUB_OUTPUT
+            echo "user_fraction=$NUMERIC_FRACTION" >> $GITHUB_OUTPUT
+            
+            # For production with partial rollout, use 'inProgress' status
+            if (( $(echo "$NUMERIC_FRACTION < 0.999" | bc -l) )); then
+              echo "status=inProgress" >> $GITHUB_OUTPUT
+            else
+              echo "status=completed" >> $GITHUB_OUTPUT
+            fi
           else
-            echo "value=null" >> $GITHUB_OUTPUT
+            echo "user_fraction=null" >> $GITHUB_OUTPUT
+            echo "status=completed" >> $GITHUB_OUTPUT
           fi
 
       # Upload to Play Store
@@ -174,8 +182,9 @@ jobs:
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: ${{ env.TRACK }}
           # Only set userFraction for production and use the numeric value
-          userFraction: ${{ steps.user_fraction.outputs.value }}
-          status: completed
+          userFraction: ${{ steps.release_params.outputs.user_fraction }}
+          # Set status based on whether it's a staged rollout
+          status: ${{ steps.release_params.outputs.status }}
           releaseName: ${{ env.VERSION_NAME }}
           mappingFile: app/build/outputs/mapping/release/mapping.txt
           whatsNewDirectory: app/src/main/play/release-notes
@@ -191,6 +200,6 @@ jobs:
             
             Version **${{ env.VERSION_NAME }}** (code: ${{ env.VERSION_CODE }}) has been successfully uploaded to the **${{ env.TRACK }}** track.
             
-            ${{ env.TRACK == 'production' && env.USER_FRACTION != '1.0' && format('This is a staged rollout to users.') || '' }}
+            ${{ env.TRACK == 'production' && steps.release_params.outputs.user_fraction != 'null' && format('This is a staged rollout to {0}% of users.', steps.release_params.outputs.user_fraction * 100) || '' }}
             
             The app should be available for testers soon. Check the Google Play Console for status updates.
