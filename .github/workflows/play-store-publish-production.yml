@@ -23,9 +23,18 @@ jobs:
   security-check:
     uses: ./.github/workflows/ci-security-check.yml
   
-  publish:
+  # Run Firebase Test Lab tests before publishing
+  firebase-tests:
     needs: security-check
-    # Only run if security check passes
+    if: needs.security-check.outputs.should-run == 'true'
+    uses: ./.github/workflows/firebase-test-lab.yml
+    with:
+      releaseType: 'production'
+    secrets: inherit
+  
+  publish:
+    needs: [security-check, firebase-tests]
+    # Only run if security check passes and tests pass
     if: needs.security-check.outputs.should-run == 'true'
     runs-on: ubuntu-latest
     # Required for OIDC authentication with Google Cloud
