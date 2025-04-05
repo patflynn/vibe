@@ -1,0 +1,133 @@
+name: Update README Assets
+
+on:
+  # Run on pushes to main
+  push:
+    branches: [ main ]
+    paths:
+      - '**.kt'
+      - '**.xml'
+      - 'gradle/**'
+      - '**.gradle'
+  
+  # Run on workflow dispatch
+  workflow_dispatch:
+
+  # Run on a schedule (weekly)
+  schedule:
+    - cron: '0 0 * * 0'  # At 00:00 on Sunday
+
+jobs:
+  generate-assets:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Check out the repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      # Set up JDK
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+      
+      # Set up Android SDK
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        
+      # Grant execute permission for gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      # Build debug APK
+      - name: Build debug APK
+        run: ./gradlew assembleDebug
+      
+      # Build test APK
+      - name: Build test APK
+        run: ./gradlew assembleDebugAndroidTest
+      
+      # Run screenshot tests on emulator
+      - name: Run tests on emulator
+        uses: ReactiveCircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          profile: Nexus 6
+          script: |
+            # Grant storage permissions needed for screenshots
+            adb shell pm grant dev.broken.app.vibe android.permission.WRITE_EXTERNAL_STORAGE
+            adb shell pm grant dev.broken.app.vibe android.permission.READ_EXTERNAL_STORAGE
+            
+            # Run the screenshot tests
+            ./gradlew connectedCheck -Pandroid.testInstrumentationRunnerArguments.class=dev.broken.app.vibe.screenshots.*
+            
+            # Pull the screenshots from the device
+            mkdir -p screenshots
+            adb pull /sdcard/Pictures/screenshots/ ./screenshots/
+            
+            # Pull the screen recordings
+            mkdir -p recordings
+            adb pull /sdcard/Movies/screenshots/ ./recordings/
+      
+      # Process the screenshots and videos
+      - name: Process assets
+        run: |
+          # Create assets directory in the repo
+          mkdir -p assets/screenshots
+          mkdir -p assets/videos
+          
+          # Copy the latest screenshots and optimize them
+          find ./screenshots -name "*.png" -type f -exec cp {} ./assets/screenshots/ \;
+          
+          # Copy the latest video 
+          find ./recordings -name "*.mp4" -type f -exec cp {} ./assets/videos/ \;
+          
+          # Convert main video to GIF for the README
+          sudo apt-get update && sudo apt-get install -y ffmpeg
+          LATEST_VIDEO=$(find ./assets/videos -type f -name "*.mp4" | sort -r | head -n 1)
+          if [ -n "$LATEST_VIDEO" ]; then
+            ffmpeg -i "$LATEST_VIDEO" -vf "fps=10,scale=320:-1:flags=lanczos" ./assets/videos/app_demo.gif
+          fi
+      
+      # Update the README with the new assets
+      - name: Update README
+        run: |
+          # Create readme_updated.md as a copy of the original
+          cp README.md readme_updated.md
+          
+          # Check if we have the screenshots section already
+          if grep -q "## Screenshots" readme_updated.md; then
+            # Replace the existing screenshots section
+            sed -i '/## Screenshots/,/## Development Setup/c\## Screenshots\n\n<div align="center">\n  <img src="assets/screenshots/main_screen_default_latest.png" width="280" />\n  <img src="assets/screenshots/main_screen_timer_running_latest.png" width="280" />\n  <img src="assets/screenshots/main_screen_20min_latest.png" width="280" />\n</div>\n\n## App Demo\n\n<div align="center">\n  <img src="assets/videos/app_demo.gif" width="280" />\n</div>\n\n## Development Setup' readme_updated.md
+          else
+            # Add the screenshots section before "Development Setup"
+            sed -i '/## Development Setup/i ## Screenshots\n\n<div align="center">\n  <img src="assets/screenshots/main_screen_default_latest.png" width="280" />\n  <img src="assets/screenshots/main_screen_timer_running_latest.png" width="280" />\n  <img src="assets/screenshots/main_screen_20min_latest.png" width="280" />\n</div>\n\n## App Demo\n\n<div align="center">\n  <img src="assets/videos/app_demo.gif" width="280" />\n</div>\n' readme_updated.md
+          fi
+          
+          # Replace the original README
+          mv readme_updated.md README.md
+      
+      # Rename the screenshots to "latest" versions for consistent links
+      - name: Create latest asset versions
+        run: |
+          # For each screenshot type, copy the most recent one to a "latest" filename
+          for TYPE in main_screen_default main_screen_timer_running main_screen_20min; do
+            LATEST=$(find ./assets/screenshots -name "${TYPE}_*.png" | sort -r | head -n 1)
+            if [ -n "$LATEST" ]; then
+              cp "$LATEST" "./assets/screenshots/${TYPE}_latest.png"
+            fi
+          done
+      
+      # Commit and push the changes
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add assets/ README.md
+          git commit -m "Update README screenshots and demo video [skip ci]"
+          git push
