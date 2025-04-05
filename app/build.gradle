@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.appdistribution'
+    id 'com.github.triplet.play' version '3.8.4' // Play Store publishing plugin
 }
 
 android {
@@ -18,6 +19,21 @@ android {
         testInstrumentationRunnerArguments clearPackageData: 'true'
     }
     
+    // Define signing configuration only for release builds
+    signingConfigs {
+        // Only create a release signing config if the environment variables are available
+        // This allows CI to use the signing configuration while local builds can skip it
+        if (System.getenv("SIGNING_KEY") != null) {
+            release {
+                // These values will be provided by the CI workflow through env vars
+                storeFile file(System.getenv("KEYSTORE_FILE") ?: "${rootDir}/keystore.jks")
+                storePassword System.getenv("SIGNING_STORE_PASSWORD")
+                keyAlias System.getenv("SIGNING_KEY_ALIAS")
+                keyPassword System.getenv("SIGNING_KEY_PASSWORD") 
+            }
+        }
+    }
+    
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
         animationsDisabled true
@@ -26,9 +42,33 @@ android {
         }
     }
     buildTypes {
-        release {
+        debug {
+            // Debug builds don't need signing or minification
             minifyEnabled false
+            // Default debug signing config will be used automatically
+        }
+        release {
+            minifyEnabled false // Keep false for CI builds until proguard rules are tested
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            // Only apply the signing config if it exists (for CI builds)
+            if (signingConfigs.hasProperty('release')) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+    
+    // Play Store publishing configuration - only enabled when credentials are available
+    if (System.getenv("PLAY_CONFIG_JSON") != null) {
+        play {
+            // Path to service account JSON file - set in CI workflow
+            serviceAccountCredentials.set(file(System.getenv("PLAY_CONFIG_JSON_FILE") ?: "${rootDir}/play-store-config.json"))
+            
+            // Default track for publishing - can be overridden in CI
+            track.set(System.getenv("PLAY_TRACK") ?: "internal")
+            
+            // User fraction for staged releases - can be overridden in CI
+            userFraction.set(Double.parseDouble(System.getenv("PLAY_USER_FRACTION") ?: "1.0"))
         }
     }
     compileOptions {
