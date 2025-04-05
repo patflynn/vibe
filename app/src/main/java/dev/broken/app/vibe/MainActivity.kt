@@ -14,15 +14,7 @@ import dev.broken.app.vibe.databinding.ActivityMainBinding
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-/**
- * Feature flags for testing different app behaviors
- */
-object FeatureFlags {
-    var DISABLE_SOUND_FOR_TESTING = false
-    var DISABLE_VIBRATION_FOR_TESTING = false
-    var USE_SHORT_TIMERS_FOR_TESTING = false
-    var LOG_TIMER_EVENTS = false
-}
+// FeatureFlags moved to separate file
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,8 +26,8 @@ class MainActivity : AppCompatActivity() {
     
     private var mediaPlayer: MediaPlayer? = null
     
-    // Define meditation durations in minutes
-    private val durations = listOf(5, 10, 15, 20, 25, 30, 40)
+    // Use durations from FeatureFlags
+    private val durations = FeatureFlags.TIMER_INTERVALS
     private var selectedDurationIndex = 3 // Default is 20 minutes (index 3)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,12 +70,7 @@ class MainActivity : AppCompatActivity() {
         playBellSound()
         
         val durationMinutes = durations[selectedDurationIndex]
-        var durationMillis = TimeUnit.MINUTES.toMillis(durationMinutes.toLong())
-        
-        // Use shorter timers for testing if flag is enabled
-        if (FeatureFlags.USE_SHORT_TIMERS_FOR_TESTING) {
-            durationMillis = TimeUnit.SECONDS.toMillis(10) // Use 10 seconds for testing
-        }
+        var durationMillis = FeatureFlags.getDurationInMillis(durationMinutes)
         
         if (FeatureFlags.LOG_TIMER_EVENTS) {
             android.util.Log.d("VibeApp", "Starting timer for ${durationMillis}ms")

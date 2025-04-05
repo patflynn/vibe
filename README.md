@@ -14,15 +14,15 @@ An ultra simple, free meditation app for Android.
 ## Screenshots
 
 <div align="center">
-  <!-- Screenshots will be automatically updated by CI workflow -->
-  <p>Screenshots will appear here after the first workflow run</p>
+  <img src="assets/screenshots/main_screen_default_latest.png" width="280" alt="Default Screen" />
+  <img src="assets/screenshots/main_screen_timer_running_latest.png" width="280" alt="Timer Running" />
+  <img src="assets/screenshots/main_screen_20min_latest.png" width="280" alt="20 Minute Timer" />
 </div>
 
 ## App Demo
 
 <div align="center">
-  <!-- Demo video will be automatically updated by CI workflow -->
-  <p>App demo will appear here after the first workflow run</p>
+  <img src="assets/videos/app_demo.gif" width="280" alt="App Demo" />
 </div>
 
 ## Download
