@@ -143,6 +143,10 @@ jobs:
         with:
           workload_identity_provider: 'projects/742277119072/locations/global/workloadIdentityPools/github-workflows/providers/github-pool'
           service_account: 'github-actions-play-publisher@broken-vibe.iam.gserviceaccount.com'
+          token_format: 'access_token'
+          create_credentials_file: true
+          access_token_lifetime: '3600s'
+          access_token_scopes: 'https://www.googleapis.com/auth/androidpublisher'
 
       # Upload to Play Store
       - name: Upload to Play Store
