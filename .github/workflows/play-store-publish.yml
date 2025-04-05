@@ -160,7 +160,12 @@ jobs:
           if [[ "${{ env.TRACK }}" == "production" ]]; then
             # Convert to numeric value by using bc for floating point arithmetic
             NUMERIC_FRACTION=$(echo "${{ env.USER_FRACTION }}" | bc)
+            
+            # Calculate the percentage for the message
+            PERCENTAGE=$(echo "$NUMERIC_FRACTION * 100" | bc)
+            
             echo "user_fraction=$NUMERIC_FRACTION" >> $GITHUB_OUTPUT
+            echo "percentage=$PERCENTAGE" >> $GITHUB_OUTPUT
             
             # For production with partial rollout, use 'inProgress' status
             if (( $(echo "$NUMERIC_FRACTION < 0.999" | bc -l) )); then
@@ -170,6 +175,7 @@ jobs:
             fi
           else
             echo "user_fraction=null" >> $GITHUB_OUTPUT
+            echo "percentage=0" >> $GITHUB_OUTPUT
             echo "status=completed" >> $GITHUB_OUTPUT
           fi
 
@@ -200,6 +206,6 @@ jobs:
             
             Version **${{ env.VERSION_NAME }}** (code: ${{ env.VERSION_CODE }}) has been successfully uploaded to the **${{ env.TRACK }}** track.
             
-            ${{ env.TRACK == 'production' && steps.release_params.outputs.user_fraction != 'null' && format('This is a staged rollout to {0}% of users.', steps.release_params.outputs.user_fraction * 100) || '' }}
+            ${{ env.TRACK == 'production' && steps.release_params.outputs.user_fraction != 'null' && format('This is a staged rollout to {0}% of users.', steps.release_params.outputs.percentage) || '' }}
             
             The app should be available for testers soon. Check the Google Play Console for status updates.
