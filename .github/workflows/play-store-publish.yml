@@ -153,6 +153,18 @@ jobs:
           workload_identity_provider: 'projects/742277119072/locations/global/workloadIdentityPools/github-workflows/providers/github-pool'
           service_account: 'github-actions-play-publisher@broken-vibe.iam.gserviceaccount.com'
 
+      # Process user fraction properly
+      - name: Set user fraction value
+        id: user_fraction
+        run: |
+          if [[ "${{ env.TRACK }}" == "production" ]]; then
+            # Convert to numeric value by using bc for floating point arithmetic
+            NUMERIC_FRACTION=$(echo "${{ env.USER_FRACTION }}" | bc)
+            echo "value=$NUMERIC_FRACTION" >> $GITHUB_OUTPUT
+          else
+            echo "value=null" >> $GITHUB_OUTPUT
+          fi
+
       # Upload to Play Store
       - name: Upload to Play Store
         uses: r0adkll/upload-google-play@v1
@@ -161,9 +173,8 @@ jobs:
           packageName: dev.broken.app.vibe
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: ${{ env.TRACK }}
-          # For internal, alpha, beta tracks - don't set userFraction
-          # For production, use 0.1 (10%) for staged rollout
-          userFraction: ${{ env.TRACK == 'production' && 0.1 || null }}
+          # Only set userFraction for production and use the numeric value
+          userFraction: ${{ steps.user_fraction.outputs.value }}
           status: completed
           releaseName: ${{ env.VERSION_NAME }}
           mappingFile: app/build/outputs/mapping/release/mapping.txt
