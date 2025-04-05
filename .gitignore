@@ -31,3 +31,4 @@ captures/
 gradle-wrapper.properties
 /app/debug/
 /app/release/
+/keys/
