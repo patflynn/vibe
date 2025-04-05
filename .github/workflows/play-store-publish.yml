@@ -161,7 +161,9 @@ jobs:
           packageName: dev.broken.app.vibe
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: ${{ env.TRACK }}
-          userFraction: ${{ env.USER_FRACTION }}
+          # For internal, alpha, beta tracks - don't set userFraction
+          # For production, use 0.1 (10%) for staged rollout
+          userFraction: ${{ env.TRACK == 'production' && 0.1 || null }}
           status: completed
           releaseName: ${{ env.VERSION_NAME }}
           mappingFile: app/build/outputs/mapping/release/mapping.txt
