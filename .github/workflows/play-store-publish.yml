@@ -150,7 +150,7 @@ jobs:
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v2'
         with:
-          workload_identity_provider: 'https://iam.googleapis.com/projects/742277119072/locations/global/workloadIdentityPools/github-workflows/providers/github-pool'
+          workload_identity_provider: 'projects/742277119072/locations/global/workloadIdentityPools/github-workflows/providers/github-pool'
           service_account: 'github-actions-play-publisher@broken-vibe.iam.gserviceaccount.com'
 
       # Upload to Play Store
