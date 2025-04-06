@@ -121,8 +121,18 @@ jobs:
           
           # Copy screenshots - they come from Espresso tests
           echo "Downloading screenshots..."
+          # First, list all files in the bucket to understand the structure
+          echo "Listing all files in the bucket for debugging:"
+          gsutil ls -r "$BUCKET_PATH" || echo "Could not list complete bucket contents"
+          
+          # Try to find and copy screenshots from multiple possible locations
           gsutil -m cp -r "$BUCKET_PATH/*/artifacts/screenshots" ./screenshots/ || echo "No screenshots found in artifacts/screenshots"
           gsutil -m cp -r "$BUCKET_PATH/*/*.png" ./screenshots/ || echo "No PNG files found directly in results"
+          gsutil -m cp -r "$BUCKET_PATH/*/*/*.png" ./screenshots/ || echo "No PNG files found in subdirectories"
+          gsutil -m cp -r "$BUCKET_PATH/*/test_data/*.png" ./screenshots/ || echo "No PNG files found in test_data"
+          
+          # Check for external storage directory where our tests save files
+          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/Android/data/dev.broken.app.vibe/files/Pictures/screenshots/*.png" ./screenshots/ || echo "No screenshots found in app external storage"
           
           # Copy video recording
           echo "Downloading video recording..."
