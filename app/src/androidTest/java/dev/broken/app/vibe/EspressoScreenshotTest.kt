@@ -3,12 +3,18 @@ package dev.broken.app.vibe
 import android.graphics.Bitmap
 import android.os.Environment
 import android.util.Log
+import android.view.View
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
+import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.swipeRight
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.screenshot.captureToBitmap
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers.any
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.After
@@ -17,6 +23,24 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
 import java.io.FileOutputStream
+
+/**
+ * Extension function for capturing screenshots as a fallback for Espresso's screenshot API
+ */
+fun ViewInteraction.captureToBitmap(): Bitmap {
+    var bitmap: Bitmap? = null
+    perform(object : ViewAction {
+        override fun getConstraints(): Matcher<View> = any(View::class.java)
+        override fun getDescription() = "Capture view to bitmap"
+        override fun perform(uiController: UiController, view: View) {
+            view.isDrawingCacheEnabled = true
+            view.buildDrawingCache()
+            bitmap = view.drawingCache
+            uiController.loopMainThreadUntilIdle()
+        }
+    })
+    return bitmap ?: throw IllegalStateException("Failed to capture bitmap from view")
+}
 
 /**
  * Test for capturing screenshots using Espresso's native screenshot API.

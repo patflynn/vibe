@@ -87,4 +87,5 @@ class ScreenshotHelper {
         val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss")
         return dateFormat.format(Date())
     }
+  }
 }
