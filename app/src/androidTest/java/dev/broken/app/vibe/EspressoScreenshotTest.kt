@@ -25,8 +25,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 /**
- * Extension function for capturing screenshots since Espresso's built-in 
- * screenshot API is not available in the current configuration
+ * Extension function for capturing screenshots as a fallback for Espresso's screenshot API
  */
 fun ViewInteraction.captureToBitmap(): Bitmap {
     var bitmap: Bitmap? = null
