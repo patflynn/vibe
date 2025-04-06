@@ -10,4 +10,16 @@
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     
+    <instrumentation
+        android:name="androidx.test.runner.AndroidJUnitRunner"
+        android:targetPackage="dev.broken.app.vibe">
+        
+        <!-- Register the Firebase Test Lab screenshot processor -->
+        <meta-data
+            android:name="screenCaptureProcessors"
+            android:value="com.google.firebase.testlab.screenshot.FirebaseScreenCaptureProcessor" />
+    </instrumentation>
+    
+    <application>
+    
 </manifest>

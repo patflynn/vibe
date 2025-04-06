@@ -117,6 +117,9 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'tools.fastlane:screengrab:2.1.1'
     
+    // Firebase Test Lab screenshot support
+    androidTestImplementation 'com.google.firebase:testlab-instr-lib:0.2'
+    
     // Test orchestrator
     androidTestUtil 'androidx.test:orchestrator:1.5.1'
 }
