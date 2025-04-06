@@ -220,20 +220,14 @@ jobs:
             fi
           done
           
-          # If we're missing any screenshots, create placeholder images
-          if [[ "$found_default" == "false" ]]; then
-            echo "Missing default screen screenshot - creating placeholder"
-            echo "Default Screen Placeholder" > "./assets/screenshots/main_screen_default_${TIMESTAMP}.png"
-          fi
-          
-          if [[ "$found_running" == "false" ]]; then
-            echo "Missing timer running screenshot - creating placeholder"
-            echo "Timer Running Placeholder" > "./assets/screenshots/main_screen_timer_running_${TIMESTAMP}.png"
-          fi
-          
-          if [[ "$found_20min" == "false" ]]; then
-            echo "Missing 20min timer screenshot - creating placeholder"
-            echo "20min Timer Placeholder" > "./assets/screenshots/main_screen_20min_${TIMESTAMP}.png"
+          # If we're missing any screenshots, create empty PR to notify without corrupted files
+          if [[ "$found_default" == "false" || "$found_running" == "false" || "$found_20min" == "false" ]]; then
+            echo "WARNING: Some screenshots were not found! Not creating corrupted placeholder files."
+            echo "Screenshots found: default=$found_default, running=$found_running, 20min=$found_20min"
+            echo "SCREENSHOTS_MISSING=true" >> $GITHUB_ENV
+          else
+            echo "All expected screenshots were found successfully."
+            echo "SCREENSHOTS_MISSING=false" >> $GITHUB_ENV
           fi
           
           # List all processed screenshots
@@ -260,10 +254,16 @@ jobs:
             else
               echo "App demo GIF is already set to the most recent version"
             fi
+            
+            echo "VIDEO_FOUND=true" >> $GITHUB_ENV
           else
-            echo "No video found - creating placeholder"
-            mkdir -p ./assets/videos
-            echo "App Demo Video Placeholder" > "./assets/videos/app_demo.gif"
+            echo "No video found. Will not create placeholder to avoid corrupting the README."
+            echo "VIDEO_FOUND=false" >> $GITHUB_ENV
+            
+            # If we also don't have screenshots, this is a complete failure
+            if [[ "$SCREENSHOTS_MISSING" == "true" ]]; then
+              echo "Both screenshots and video are missing. No assets were found!"
+            fi
           fi
       
       # Update the README with the new assets
@@ -328,6 +328,44 @@ jobs:
           # Get current date and time for branch name to ensure uniqueness
           DATETIME=$(date +'%Y%m%d-%H%M%S')
           BRANCH_NAME="update-readme-assets-${DATETIME}"
+          
+          # Check if assets are missing before proceeding
+          if [[ "$SCREENSHOTS_MISSING" == "true" || "$VIDEO_FOUND" == "false" ]]; then
+            echo "Assets are missing. Creating an issue instead of corrupting the README."
+            
+            # Create the issue with appropriate content
+            ISSUE_TITLE="README assets update failed"
+            ISSUE_BODY="The automated README assets update workflow ran, but failed to find proper assets.\n\n"
+            
+            # Add details about what's missing
+            if [[ "$SCREENSHOTS_MISSING" == "true" ]]; then
+              ISSUE_BODY+="### Missing Screenshots\n"
+              ISSUE_BODY+="The following screenshots could not be found in the Firebase Test Lab results:\n"
+              if [[ "$found_default" == "false" ]]; then ISSUE_BODY+="- Default screen screenshot\n"; fi
+              if [[ "$found_running" == "false" ]]; then ISSUE_BODY+="- Timer running screenshot\n"; fi
+              if [[ "$found_20min" == "false" ]]; then ISSUE_BODY+="- 20min timer screenshot\n"; fi
+              ISSUE_BODY+="\n"
+            fi
+            
+            if [[ "$VIDEO_FOUND" == "false" ]]; then
+              ISSUE_BODY+="### Missing Video\n"
+              ISSUE_BODY+="No app demo video could be found in the Firebase Test Lab results.\n\n"
+            fi
+            
+            ISSUE_BODY+="Please check the [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.\n"
+            ISSUE_BODY+="This could be due to:\n"
+            ISSUE_BODY+="1. Test failures\n"
+            ISSUE_BODY+="2. Firebase Test Lab configuration issues\n"
+            ISSUE_BODY+="3. Screenshot/recording capture code not working properly\n\n"
+            ISSUE_BODY+="No changes were made to the README to avoid corrupting it with placeholder files.\n"
+            ISSUE_BODY+="PR #60 should fix these issues by improving how screenshots are captured and saved."
+            
+            # Create the issue using the environment variables
+            gh issue create --title "$ISSUE_TITLE" --body "$ISSUE_BODY"
+            
+            echo "Created issue instead of PR due to missing assets"
+            exit 0
+          fi
           
           # Check if we have changes to commit
           if [[ -z "$(git status --porcelain assets/ README.md)" ]]; then
