@@ -51,7 +51,7 @@ android {
             // Default debug signing config will be used automatically
         }
         release {
-            minifyEnabled false // Keep false for CI builds until proguard rules are tested
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             // Only apply the signing config if it exists (for CI builds)
