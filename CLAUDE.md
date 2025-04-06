@@ -20,6 +20,8 @@
 
 ## Workflow Guidelines
 - Always create changes through a PR flow, even without being explicitly asked
+- Always sync with upstream main before starting work on a new PR (`git fetch origin main && git merge origin/main`)
+- Always check PR status before pushing additional changes (`git fetch && git branch -vv`)
 - Create feature branches with descriptive names for all changes
 - Submit pull requests for review before merging to main
 - Make sure that you keep separate issues/features in separate PRs
