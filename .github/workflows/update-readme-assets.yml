@@ -235,7 +235,13 @@ jobs:
             ffmpeg -i "./assets/videos/app_demo_${TIMESTAMP}.mp4" -vf "fps=10,scale=320:-1:flags=lanczos" "./assets/videos/app_demo_${TIMESTAMP}.gif"
             
             # Create a latest version for consistent README links
-            cp "./assets/videos/app_demo_${TIMESTAMP}.gif" "./assets/videos/app_demo.gif"
+            GIF_SOURCE="./assets/videos/app_demo_${TIMESTAMP}.gif"
+            GIF_DEST="./assets/videos/app_demo.gif"
+            if [ "$GIF_SOURCE" != "$GIF_DEST" ]; then
+              cp "$GIF_SOURCE" "$GIF_DEST"
+            else
+              echo "App demo GIF is already set to the most recent version"
+            fi
           else
             echo "No video found - creating placeholder"
             mkdir -p ./assets/videos
@@ -253,8 +259,14 @@ jobs:
           for TYPE in main_screen_default main_screen_timer_running main_screen_20min; do
             LATEST=$(find ./assets/screenshots -name "${TYPE}_*.png" | sort -r | head -n 1)
             if [ -n "$LATEST" ]; then
-              echo "Setting $TYPE latest to: $LATEST"
-              cp "$LATEST" "./assets/screenshots/${TYPE}_latest.png"
+              # Check if source and destination are different to avoid cp error
+              DEST="./assets/screenshots/${TYPE}_latest.png"
+              if [ "$LATEST" != "$DEST" ]; then
+                echo "Setting $TYPE latest to: $LATEST"
+                cp "$LATEST" "$DEST"
+              else
+                echo "$TYPE latest is already set to the most recent version"
+              fi
             fi
           done
           
