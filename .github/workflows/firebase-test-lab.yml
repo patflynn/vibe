@@ -77,6 +77,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # Add explicit dependency for screenshot testing
+      - name: Update build.gradle with Espresso screenshot dependencies
+        run: |
+          # Add the espresso-core dependency with screenshot support
+          sed -i '/androidTestImplementation .androidx.test.espresso:espresso-core.*/s/.*/    androidTestImplementation "androidx.test.espresso:espresso-core:3.6.1"\n    androidTestImplementation "androidx.test.espresso:espresso-core:3.6.1:screencapture"/' app/build.gradle
+
       - name: Build debug APK and test APK
         run: ./gradlew assembleDebug assembleDebugAndroidTest
 
