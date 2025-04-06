@@ -161,7 +161,7 @@ jobs:
           packageName: dev.broken.app.vibe
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: ${{ env.TRACK }}
-          status: completed
+          status: draft
           releaseName: ${{ env.VERSION_NAME }}
           mappingFile: app/build/outputs/mapping/release/mapping.txt
           whatsNewDirectory: app/src/main/play/release-notes
