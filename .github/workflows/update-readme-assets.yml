@@ -126,6 +126,9 @@ jobs:
           gsutil ls -r "$BUCKET_PATH" || echo "Could not list complete bucket contents"
           
           # Try to find and copy screenshots from multiple possible locations
+          echo "Searching for screenshots in multiple locations..."
+          
+          # Standard artifact locations
           gsutil -m cp -r "$BUCKET_PATH/*/artifacts/screenshots" ./screenshots/ || echo "No screenshots found in artifacts/screenshots"
           gsutil -m cp -r "$BUCKET_PATH/*/*.png" ./screenshots/ || echo "No PNG files found directly in results"
           gsutil -m cp -r "$BUCKET_PATH/*/*/*.png" ./screenshots/ || echo "No PNG files found in subdirectories"
@@ -133,6 +136,21 @@ jobs:
           
           # Check for external storage directory where our tests save files
           gsutil -m cp -r "$BUCKET_PATH/*/sdcard/Android/data/dev.broken.app.vibe/files/Pictures/screenshots/*.png" ./screenshots/ || echo "No screenshots found in app external storage"
+          
+          # Check for new screenshot locations added in our enhanced test
+          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/screenshots/*.png" ./screenshots/ || echo "No screenshots found in /sdcard/screenshots"
+          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/Download/firebase_test_lab/*.png" ./screenshots/ || echo "No screenshots found in /sdcard/Download/firebase_test_lab"
+          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/firebase_screenshot_*.png" ./screenshots/ || echo "No screenshots found with firebase_screenshot prefix"
+          
+          # Check for test-results directory
+          gsutil -m cp -r "$BUCKET_PATH/*/data/data/dev.broken.app.vibe/files/test-results/*.png" ./screenshots/ || echo "No screenshots found in test-results"
+          
+          # Additional app data locations
+          gsutil -m cp -r "$BUCKET_PATH/*/data/data/dev.broken.app.vibe/files/screenshots/*.png" ./screenshots/ || echo "No screenshots found in app files/screenshots"
+          
+          # Recursive search with a depth limit to find PNGs anywhere in the results
+          echo "Performing deep search for any PNG files in the test results..."
+          gsutil -m cp -r "$BUCKET_PATH/**/*.png" ./screenshots/ || echo "No PNG files found in deep search"
           
           # Copy video recording
           echo "Downloading video recording..."
