@@ -137,16 +137,25 @@ jobs:
           # Check for external storage directory where our tests save files
           gsutil -m cp -r "$BUCKET_PATH/*/sdcard/Android/data/dev.broken.app.vibe/files/Pictures/screenshots/*.png" ./screenshots/ || echo "No screenshots found in app external storage"
           
-          # Check for new screenshot locations added in our enhanced test
-          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/screenshots/*.png" ./screenshots/ || echo "No screenshots found in /sdcard/screenshots"
-          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/Download/firebase_test_lab/*.png" ./screenshots/ || echo "No screenshots found in /sdcard/Download/firebase_test_lab"
-          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/firebase_screenshot_*.png" ./screenshots/ || echo "No screenshots found with firebase_screenshot prefix"
+          # Check our new test screenshot locations
+          echo "Checking for screenshots in test_screenshots directory..."
+          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/test_screenshots/*.png" ./screenshots/ || echo "No screenshots found in /sdcard/test_screenshots"
           
-          # Check for test-results directory
-          gsutil -m cp -r "$BUCKET_PATH/*/data/data/dev.broken.app.vibe/files/test-results/*.png" ./screenshots/ || echo "No screenshots found in test-results"
+          # Check test directories
+          gsutil -m cp -r "$BUCKET_PATH/*/data/data/dev.broken.app.vibe/files/test_screenshots/*.png" ./screenshots/ || echo "No screenshots found in app internal test_screenshots"
           
-          # Additional app data locations
-          gsutil -m cp -r "$BUCKET_PATH/*/data/data/dev.broken.app.vibe/files/screenshots/*.png" ./screenshots/ || echo "No screenshots found in app files/screenshots"
+          # Public Pictures directory
+          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/Pictures/screenshots/*.png" ./screenshots/ || echo "No screenshots found in public Pictures directory"
+          
+          # App files directory
+          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/Android/data/dev.broken.app.vibe/files/Pictures/screenshots/*.png" ./screenshots/ || echo "No screenshots found in app Pictures directory"
+          
+          # Special Firebase Test Lab paths
+          gsutil -m cp -r "$BUCKET_PATH/*/test_root/**/screenshots/*.png" ./screenshots/ || echo "No screenshots found in test_root"
+          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/DCIM/*.png" ./screenshots/ || echo "No screenshots found in DCIM"
+          
+          # Try absolute wildcard search as last resort
+          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/**/*.png" ./screenshots/ || echo "No PNG files found in sdcard"
           
           # Recursive search with a depth limit to find PNGs anywhere in the results
           echo "Performing deep search for any PNG files in the test results..."
