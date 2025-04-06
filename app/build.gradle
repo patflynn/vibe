@@ -17,11 +17,11 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: 'true'
-        
+
         // Add parameters for screenshot tests
         testInstrumentationRunnerArguments captureScreenshots: 'true'
     }
-    
+
     // Define signing configuration only for release builds
     signingConfigs {
         // Only create a release signing config if the environment variables are available
@@ -32,11 +32,11 @@ android {
                 storeFile file(System.getenv("KEYSTORE_FILE") ?: "${rootDir}/keystore.jks")
                 storePassword System.getenv("SIGNING_STORE_PASSWORD")
                 keyAlias System.getenv("SIGNING_KEY_ALIAS")
-                keyPassword System.getenv("SIGNING_KEY_PASSWORD") 
+                keyPassword System.getenv("SIGNING_KEY_PASSWORD")
             }
         }
     }
-    
+
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
         animationsDisabled true
@@ -53,23 +53,23 @@ android {
         release {
             minifyEnabled false // Keep false for CI builds until proguard rules are tested
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            
+
             // Only apply the signing config if it exists (for CI builds)
             if (signingConfigs.hasProperty('release')) {
                 signingConfig signingConfigs.release
             }
         }
     }
-    
+
     // Play Store publishing configuration - only enabled when credentials are available
     if (System.getenv("PLAY_CONFIG_JSON") != null) {
         play {
             // Path to service account JSON file - set in CI workflow
             serviceAccountCredentials.set(file(System.getenv("PLAY_CONFIG_JSON_FILE") ?: "${rootDir}/play-store-config.json"))
-            
+
             // Default track for publishing - can be overridden in CI
             track.set(System.getenv("PLAY_TRACK") ?: "internal")
-            
+
             // User fraction for staged releases - can be overridden in CI
             userFraction.set(Double.parseDouble(System.getenv("PLAY_USER_FRACTION") ?: "1.0"))
         }
@@ -93,16 +93,16 @@ dependencies {
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.7'
-    
+
     // Firebase
-    implementation platform('com.google.firebase:firebase-bom:33.11.0')
+    implementation platform('com.google.firebase:firebase-bom:33.12.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
-    
+
     // Testing
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.test:core:1.6.1'
     testImplementation 'org.robolectric:robolectric:4.11.1'
-    
+
     // Android Testing
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test:core:1.6.1'
@@ -112,15 +112,15 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.6.1'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.6.1'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
-    
+
     // Screenshot testing
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'tools.fastlane:screengrab:2.1.1'
-    
+
     // AndroidX Test dependencies
     androidTestImplementation 'androidx.test:core:1.6.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
-    
+
     // Test orchestrator
     androidTestUtil 'androidx.test:orchestrator:1.5.1'
 }
