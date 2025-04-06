@@ -145,7 +145,7 @@ jobs:
           releaseFiles: app/build/outputs/bundle/release/app-release.aab
           track: production
           userFraction: ${{ env.USER_FRACTION }}
-          status: ${{ env.RELEASE_STATUS }}
+          status: draft
           releaseName: ${{ env.VERSION_NAME }}
           mappingFile: app/build/outputs/mapping/release/mapping.txt
           whatsNewDirectory: app/src/main/play/release-notes
