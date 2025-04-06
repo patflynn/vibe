@@ -166,15 +166,3 @@ jobs:
           mappingFile: app/build/outputs/mapping/release/mapping.txt
           whatsNewDirectory: app/src/main/play/release-notes
         
-      # Create GitHub release comment
-      - name: Create success comment
-        if: github.event_name == 'workflow_dispatch'
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          issue-number: ${{ github.event.inputs.issue_number || '' }}
-          body: |
-            ## 🚀 Play Store Deployment Success!
-            
-            Version **${{ env.VERSION_NAME }}** (code: ${{ env.VERSION_CODE }}) has been successfully uploaded to the **${{ env.TRACK }}** testing track.
-            
-            The app should be available for testers soon. Check the Google Play Console for status updates.
