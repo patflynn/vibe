@@ -1,4 +1,4 @@
-name: Firebase Test Lab Integration
+name: Android Instrumentation Tests
 
 on:
   # Only run during release preparation (manual trigger)
