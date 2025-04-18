@@ -60,13 +60,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Decode google-services.json
-        env:
-          GOOGLE_SERVICES_JSON_B64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
-        run: |
-          echo $GOOGLE_SERVICES_JSON_B64 | base64 --decode > app/google-services.json
-          echo "google-services.json created successfully."
-
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
@@ -80,67 +73,16 @@ jobs:
       - name: Build debug APK and test APK
         run: ./gradlew assembleDebug assembleDebugAndroidTest
 
-      # Authentication with Google Cloud
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v2'
+      - name: Run instrumentation tests on Emulator
+        uses: reactivecircus/android-emulator-runner@v2
         with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
-          project_id: '${{ secrets.FIREBASE_PROJECT_ID }}'
-
-      # Setup Google Cloud SDK
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          project_id: ${{ secrets.FIREBASE_PROJECT_ID }}
-
-      - name: Run instrumentation tests in Firebase Test Lab
-        run: |
-          # Display release type being tested
-          echo "Running Firebase Test Lab tests for $RELEASE_TYPE release preparation"
-          
-          # List available device models first for debugging
-          echo "Available device models:"
-          gcloud firebase test android models list --format="value(MODEL_ID)" | grep -i pixel
-          
-          # Run tests with newer devices that support minSdkVersion 30+
-          RESULTS_DIR="github-$RELEASE_TYPE-$GITHUB_RUN_ID-$GITHUB_RUN_NUMBER"
-          echo "Using results directory: $RESULTS_DIR"
-          
-          gcloud firebase test android run \
-            --type instrumentation \
-            --app app/build/outputs/apk/debug/app-debug.apk \
-            --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-            --device model=redfin,version=30,locale=en,orientation=portrait \
-            --device model=oriole,version=31,locale=en,orientation=portrait \
-            --device model=panther,version=33,locale=en,orientation=portrait \
-            --results-bucket gs://${{ secrets.FIREBASE_TEST_BUCKET }} \
-            --results-dir=$RESULTS_DIR \
-            --test-targets "class dev.broken.app.vibe.EspressoScreenshotTest"
-            
-          # Save the results dir for the next step
-          echo "RESULTS_DIR=$RESULTS_DIR" >> $GITHUB_ENV
-
-      - name: Download test results
-        if: always()
-        run: |
-          mkdir -p firebase-test-results
-          echo "Attempting to download test results from GCS bucket..."
-          # Try to list files in the bucket first to understand what's available
-          gsutil ls gs://${{ secrets.FIREBASE_TEST_BUCKET }}/
-          
-          # List the latest directories (newest first)
-          echo "Latest directories in bucket:"
-          gsutil ls -l gs://${{ secrets.FIREBASE_TEST_BUCKET }}/ | sort -r | head -10
-          
-          # Try to download files from the expected location using the saved RESULTS_DIR
-          echo "Downloading from gs://${{ secrets.FIREBASE_TEST_BUCKET }}/$RESULTS_DIR/*"
-          gsutil -m cp -r gs://${{ secrets.FIREBASE_TEST_BUCKET }}/$RESULTS_DIR/* firebase-test-results/ || echo "No files found in expected location, continuing workflow"
+          api-level: 30 # Match one of the FTL API levels previously used
+          script: ./gradlew connectedCheck # Command to run tests
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: firebase-test-results
-          path: firebase-test-results
+          name: emulator-test-results # Rename artifact for clarity
+          path: app/build/outputs/androidTest-results/connected/ # Standard path for connectedCheck results
           if-no-files-found: warn
