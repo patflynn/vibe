@@ -15,6 +15,8 @@ An ultra simple, free meditation app for Android.
 
 A minimalist meditation timer with no ads, no tracking, and a clean design. 
 Perfect for those who want a distraction-free meditation experience.
+=======
+## Demo
 
 <div align="center">
   <img src="assets/videos/app_demo.gif" width="280" alt="App Demo" />
