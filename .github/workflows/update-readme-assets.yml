@@ -47,14 +47,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       
-      # Decode Google Services config
-      - name: Decode google-services.json
-        env:
-          GOOGLE_SERVICES_JSON_B64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
-        run: |
-          echo $GOOGLE_SERVICES_JSON_B64 | base64 --decode > app/google-services.json
-          echo "google-services.json created successfully."
-      
       # Build debug APK
       - name: Build debug APK
         run: ./gradlew assembleDebug
@@ -62,167 +54,82 @@ jobs:
       # Build test APK
       - name: Build test APK
         run: ./gradlew assembleDebugAndroidTest
-      
-      # Authentication with Google Cloud
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v2'
+
+      # Run tests using Android Emulator
+      - name: Run Screenshot Tests on Emulator
+        uses: reactivecircus/android-emulator-runner@v2
         with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
-          project_id: '${{ secrets.FIREBASE_PROJECT_ID }}'
+          api-level: 30 # Match API level used previously
+          # Target only the screenshot test class
+          script: ./gradlew connectedCheck -Pandroid.testInstrumentationRunnerArguments.class=dev.broken.app.vibe.EspressoScreenshotTest
       
-      # Setup Google Cloud SDK
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          project_id: ${{ secrets.FIREBASE_PROJECT_ID }}
-      
-      # Run tests using Firebase Test Lab
-      - name: Run tests on Firebase Test Lab
-        run: |
-          
-          # List available device models first for debugging
-          echo "Available device models:"
-          gcloud firebase test android models list --format="value(MODEL_ID)" | grep -i pixel
-          
-          # Run tests with newer devices
-          RESULTS_DIR="github-readme-assets-${GITHUB_REF_NAME}_${GITHUB_RUN_NUMBER}"
-          echo "Using results directory: $RESULTS_DIR"
-          
-          # Run the tests on Firebase Test Lab with specific test class
-          gcloud firebase test android run \
-            --type instrumentation \
-            --app app/build/outputs/apk/debug/app-debug.apk \
-            --test app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-            --device model=redfin,version=30,locale=en,orientation=portrait \
-            --timeout 5m \
-            --results-bucket gs://${{ secrets.FIREBASE_TEST_BUCKET }} \
-            --results-dir=$RESULTS_DIR \
-            --environment-variables clearPackageData=true \
-            --test-targets "class dev.broken.app.vibe.EspressoScreenshotTest"
-            
-          # Save the results dir for the next step
-          echo "RESULTS_DIR=$RESULTS_DIR" >> $GITHUB_ENV
-          
-          # Create directories for artifacts
-          mkdir -p screenshots
-          mkdir -p recordings
-          
-          # Download test results
-          # Wait a moment for test results to be available
-          sleep 10
-          
-          # Set bucket path
-          BUCKET_PATH="gs://${{ secrets.FIREBASE_TEST_BUCKET }}/$RESULTS_DIR"
-          
-          # List artifacts to understand the structure
-          echo "Listing Firebase Test Lab artifacts..."
-          gsutil ls -la $BUCKET_PATH || echo "Could not list bucket contents yet"
-          
-          # Copy screenshots - they come from Espresso tests
-          echo "Downloading screenshots..."
-          # First, list all files in the bucket to understand the structure
-          echo "Listing all files in the bucket for debugging:"
-          gsutil ls -r "$BUCKET_PATH" || echo "Could not list complete bucket contents"
-          
-          # Try to find and copy screenshots from multiple possible locations
-          echo "Searching for screenshots in multiple locations..."
-          
-          # Standard artifact locations
-          gsutil -m cp -r "$BUCKET_PATH/*/artifacts/screenshots" ./screenshots/ || echo "No screenshots found in artifacts/screenshots"
-          gsutil -m cp -r "$BUCKET_PATH/*/*.png" ./screenshots/ || echo "No PNG files found directly in results"
-          gsutil -m cp -r "$BUCKET_PATH/*/*/*.png" ./screenshots/ || echo "No PNG files found in subdirectories"
-          gsutil -m cp -r "$BUCKET_PATH/*/test_data/*.png" ./screenshots/ || echo "No PNG files found in test_data"
-          
-          # Check for external storage directory where our tests save files
-          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/Android/data/dev.broken.app.vibe/files/Pictures/screenshots/*.png" ./screenshots/ || echo "No screenshots found in app external storage"
-          
-          # Check for new screenshot locations added in our enhanced test
-          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/screenshots/*.png" ./screenshots/ || echo "No screenshots found in /sdcard/screenshots"
-          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/Download/firebase_test_lab/*.png" ./screenshots/ || echo "No screenshots found in /sdcard/Download/firebase_test_lab"
-          gsutil -m cp -r "$BUCKET_PATH/*/sdcard/firebase_screenshot_*.png" ./screenshots/ || echo "No screenshots found with firebase_screenshot prefix"
-          
-          # Check for test-results directory
-          gsutil -m cp -r "$BUCKET_PATH/*/data/data/dev.broken.app.vibe/files/test-results/*.png" ./screenshots/ || echo "No screenshots found in test-results"
-          
-          # Additional app data locations
-          gsutil -m cp -r "$BUCKET_PATH/*/data/data/dev.broken.app.vibe/files/screenshots/*.png" ./screenshots/ || echo "No screenshots found in app files/screenshots"
-          
-          # Recursive search with a depth limit to find PNGs anywhere in the results
-          echo "Performing deep search for any PNG files in the test results..."
-          gsutil -m cp -r "$BUCKET_PATH/**/*.png" ./screenshots/ || echo "No PNG files found in deep search"
-          
-          # Copy video recording
-          echo "Downloading video recording..."
-          gsutil -m cp -r "$BUCKET_PATH/*/artifacts/video.mp4" ./recordings/ || echo "No video found in artifacts/video.mp4"
-          gsutil -m cp -r "$BUCKET_PATH/*/*.mp4" ./recordings/ || echo "No MP4 files found directly in results"
-          
-          # Show what we've downloaded
-          echo "Downloaded artifacts:"
-          find ./screenshots -type f | sort
-          find ./recordings -type f | sort
-      
-      # Process the screenshots and videos
+      # Process the screenshots generated by the emulator
       - name: Process assets
         run: |
           # Create assets directory in the repo
           mkdir -p assets/screenshots
-          mkdir -p assets/videos
           
           # Create a timestamp for versioning
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
           
-          # Process and rename screenshots from Firebase Test Lab
-          # Find all PNG files and try to categorize them based on filename patterns
+          # Process and rename screenshots from emulator results
           echo "Processing screenshots..."
+          
+          # Define the source directory for screenshots from connectedCheck
+          # The path usually includes device/emulator specific subdirectories
+          SCREENSHOT_SOURCE_DIR="app/build/outputs/androidTest-results/connected/"
+          
+          # Check if the directory exists
+          if [ ! -d "$SCREENSHOT_SOURCE_DIR" ]; then
+            echo "ERROR: Screenshot source directory not found: $SCREENSHOT_SOURCE_DIR"
+            echo "SCREENSHOTS_MISSING=true" >> $GITHUB_ENV
+            exit 0 # Exit script, no assets to process
+          fi
+          
+          # Find all PNG files within the source directory (likely in subdirs)
+          # Example filename: dev.broken.app.vibe.EspressoScreenshotTest-main_screen_default.png
+          SCREENSHOT_FILES=$(find "$SCREENSHOT_SOURCE_DIR" -type f -name "*.png")
+          
+          if [ -z "$SCREENSHOT_FILES" ]; then
+            echo "WARNING: No PNG files found in $SCREENSHOT_SOURCE_DIR"
+            echo "SCREENSHOTS_MISSING=true" >> $GITHUB_ENV
+            exit 0 # Exit script, no assets to process
+          fi
           
           # Initialize variables to track if we've found each type of screenshot
           found_default=false
           found_running=false
           found_20min=false
           
-          # First try using the name patterns from our test file
-          find ./screenshots -type f -name "*.png" | while read file; do
+          # Use filename patterns to identify screenshots
+          echo "$SCREENSHOT_FILES" | while read file; do
             echo "Found screenshot: $file"
-            # Try to identify which test created this screenshot
-            if [[ "$file" == *"captureMainScreenDefault"* || "$file" == *"main_screen_default"* ]]; then
+            # Extract the base filename
+            BASENAME=$(basename "$file")
+            
+            # Try to identify based on test method name in filename
+            if [[ "$BASENAME" == *"EspressoScreenshotTest-main_screen_default"* ]]; then
               cp "$file" "./assets/screenshots/main_screen_default_${TIMESTAMP}.png"
               found_default=true
               echo "Identified as main screen default"
-            elif [[ "$file" == *"captureMainScreenTimerRunning"* || "$file" == *"main_screen_timer_running"* ]]; then
+            elif [[ "$BASENAME" == *"EspressoScreenshotTest-main_screen_timer_running"* ]]; then
               cp "$file" "./assets/screenshots/main_screen_timer_running_${TIMESTAMP}.png"
               found_running=true
               echo "Identified as timer running screen"
-            elif [[ "$file" == *"captureDifferentTimerDurations"* || "$file" == *"main_screen_20min"* ]]; then
+            elif [[ "$BASENAME" == *"EspressoScreenshotTest-main_screen_20min"* ]]; then
               cp "$file" "./assets/screenshots/main_screen_20min_${TIMESTAMP}.png"
               found_20min=true
               echo "Identified as 20min timer screen"
             else
-              # For unidentified files, use a numeric order approach
-              if [[ "$found_default" == "false" ]]; then
-                cp "$file" "./assets/screenshots/main_screen_default_${TIMESTAMP}.png"
-                found_default=true
-                echo "Using as main screen default (fallback)"
-              elif [[ "$found_running" == "false" ]]; then
-                cp "$file" "./assets/screenshots/main_screen_timer_running_${TIMESTAMP}.png"
-                found_running=true
-                echo "Using as timer running screen (fallback)"
-              elif [[ "$found_20min" == "false" ]]; then
-                cp "$file" "./assets/screenshots/main_screen_20min_${TIMESTAMP}.png"
-                found_20min=true
-                echo "Using as 20min timer screen (fallback)"
-              else
-                # Copy remaining screenshots with timestamp
-                BASENAME=$(basename "$file" .png)
-                cp "$file" "./assets/screenshots/${BASENAME}_${TIMESTAMP}.png"
-                echo "Saved as extra screenshot"
-              fi
+              # Copy any other screenshots found with a generic name + timestamp
+              cp "$file" "./assets/screenshots/${BASENAME%.png}_${TIMESTAMP}.png"
+              echo "Saved as extra screenshot: ${BASENAME%.png}_${TIMESTAMP}.png"
             fi
           done
           
-          # If we're missing any screenshots, create empty PR to notify without corrupted files
+          # Check if we're missing any expected screenshots
           if [[ "$found_default" == "false" || "$found_running" == "false" || "$found_20min" == "false" ]]; then
-            echo "WARNING: Some screenshots were not found! Not creating corrupted placeholder files."
+            echo "WARNING: Some expected screenshots were not found!"
             echo "Screenshots found: default=$found_default, running=$found_running, 20min=$found_20min"
             echo "SCREENSHOTS_MISSING=true" >> $GITHUB_ENV
           else
@@ -234,39 +141,9 @@ jobs:
           echo "Processed screenshots:"
           find ./assets/screenshots -type f | sort
           
-          # Copy the video from Firebase Test Lab
-          echo "Processing video..."
-          VIDEO_SOURCE=$(find ./recordings -type f -name "*.mp4" | head -n 1)
-          if [ -n "$VIDEO_SOURCE" ]; then
-            echo "Found video: $VIDEO_SOURCE"
-            cp "$VIDEO_SOURCE" "./assets/videos/app_demo_${TIMESTAMP}.mp4"
-            
-            # Convert video to GIF for the README
-            echo "Converting video to GIF..."
-            sudo apt-get update && sudo apt-get install -y ffmpeg
-            ffmpeg -i "./assets/videos/app_demo_${TIMESTAMP}.mp4" -vf "fps=10,scale=320:-1:flags=lanczos" "./assets/videos/app_demo_${TIMESTAMP}.gif"
-            
-            # Create a latest version for consistent README links
-            GIF_SOURCE="./assets/videos/app_demo_${TIMESTAMP}.gif"
-            GIF_DEST="./assets/videos/app_demo.gif"
-            if [ "$GIF_SOURCE" != "$GIF_DEST" ]; then
-              cp "$GIF_SOURCE" "$GIF_DEST"
-            else
-              echo "App demo GIF is already set to the most recent version"
-            fi
-            
-            echo "VIDEO_FOUND=true" >> $GITHUB_ENV
-          else
-            echo "No video found. Will not create placeholder to avoid corrupting the README."
-            echo "VIDEO_FOUND=false" >> $GITHUB_ENV
-            
-            # If we also don't have screenshots, this is a complete failure
-            if [[ "$SCREENSHOTS_MISSING" == "true" ]]; then
-              echo "Both screenshots and video are missing. No assets were found!"
-            fi
-          fi
+          # Video processing removed
       
-      # Update the README with the new assets
+      # Update the README with the new assets (screenshots only)
       - name: Update README
         run: |
           # Create readme_updated.md as a copy of the original
@@ -290,14 +167,14 @@ jobs:
           
           # Check if we have the screenshots section already
           if grep -q "## Screenshots" readme_updated.md; then
-            # Replace the existing screenshots section
-            sed -i '/## Screenshots/,/## App Demo/c\## Screenshots\n\n<div align="center">\n  <img src="assets/screenshots/main_screen_default_latest.png" width="280" alt="Default Screen" />\n  <img src="assets/screenshots/main_screen_timer_running_latest.png" width="280" alt="Timer Running" />\n  <img src="assets/screenshots/main_screen_20min_latest.png" width="280" alt="20 Minute Timer" />\n</div>' readme_updated.md
-            
-            # Replace the app demo section
-            sed -i '/## App Demo/,/## Download/c\## App Demo\n\n<div align="center">\n  <img src="assets/videos/app_demo.gif" width="280" alt="App Demo" />\n</div>\n\n## Download' readme_updated.md
+            # Replace the existing screenshots section, stopping before the next heading (e.g., ## Download)
+            # This regex removes the old screenshot block and the (now removed) App Demo block
+            sed -i '/## Screenshots/,/## [A-Za-z]*/ { /## Screenshots/! { /## [A-Za-z]*/! d; }; }' readme_updated.md
+            # Insert the new screenshot block
+            sed -i '/## Screenshots/a \\n<div align="center">\n  <img src="assets/screenshots/main_screen_default_latest.png" width="280" alt="Default Screen" />\n  <img src="assets/screenshots/main_screen_timer_running_latest.png" width="280" alt="Timer Running" />\n  <img src="assets/screenshots/main_screen_20min_latest.png" width="280" alt="20 Minute Timer" />\n</div>\n' readme_updated.md
           else
-            # Add the screenshots section before "Download"
-            sed -i '/## Download/i ## Screenshots\n\n<div align="center">\n  <img src="assets/screenshots/main_screen_default_latest.png" width="280" alt="Default Screen" />\n  <img src="assets/screenshots/main_screen_timer_running_latest.png" width="280" alt="Timer Running" />\n  <img src="assets/screenshots/main_screen_20min_latest.png" width="280" alt="20 Minute Timer" />\n</div>\n\n## App Demo\n\n<div align="center">\n  <img src="assets/videos/app_demo.gif" width="280" alt="App Demo" />\n</div>\n' readme_updated.md
+            # Add the screenshots section before "Download" if it doesn't exist
+            sed -i '/## Download/i ## Screenshots\n\n<div align="center">\n  <img src="assets/screenshots/main_screen_default_latest.png" width="280" alt="Default Screen" />\n  <img src="assets/screenshots/main_screen_timer_running_latest.png" width="280" alt="Timer Running" />\n  <img src="assets/screenshots/main_screen_20min_latest.png" width="280" alt="20 Minute Timer" />\n</div>\n' readme_updated.md
           fi
           
           # Print differences for logging
@@ -312,11 +189,12 @@ jobs:
         run: |
           # Create .gitkeep files to ensure directories are tracked
           mkdir -p assets/screenshots
-          mkdir -p assets/videos
+          # No longer need video directory
+          # mkdir -p assets/videos
           touch assets/screenshots/.gitkeep
-          touch assets/videos/.gitkeep
+          # touch assets/videos/.gitkeep
       
-      # Create a branch and PR with the updated assets
+      # Create a branch and PR with the updated assets (screenshots only)
       - name: Create PR with updated assets
         env:
           GH_TOKEN: ${{ github.token }}
@@ -329,36 +207,24 @@ jobs:
           DATETIME=$(date +'%Y%m%d-%H%M%S')
           BRANCH_NAME="update-readme-assets-${DATETIME}"
           
-          # Check if assets are missing before proceeding
-          if [[ "$SCREENSHOTS_MISSING" == "true" || "$VIDEO_FOUND" == "false" ]]; then
-            echo "Assets are missing. Creating an issue instead of corrupting the README."
+          # Check if screenshots are missing before proceeding
+          if [[ "$SCREENSHOTS_MISSING" == "true" ]]; then
+            echo "Screenshots are missing. Creating an issue instead of a PR with incomplete assets."
             
             # Create the issue with appropriate content
-            ISSUE_TITLE="README assets update failed"
-            ISSUE_BODY="The automated README assets update workflow ran, but failed to find proper assets.\n\n"
-            
-            # Add details about what's missing
-            if [[ "$SCREENSHOTS_MISSING" == "true" ]]; then
-              ISSUE_BODY+="### Missing Screenshots\n"
-              ISSUE_BODY+="The following screenshots could not be found in the Firebase Test Lab results:\n"
-              if [[ "$found_default" == "false" ]]; then ISSUE_BODY+="- Default screen screenshot\n"; fi
-              if [[ "$found_running" == "false" ]]; then ISSUE_BODY+="- Timer running screenshot\n"; fi
-              if [[ "$found_20min" == "false" ]]; then ISSUE_BODY+="- 20min timer screenshot\n"; fi
-              ISSUE_BODY+="\n"
-            fi
-            
-            if [[ "$VIDEO_FOUND" == "false" ]]; then
-              ISSUE_BODY+="### Missing Video\n"
-              ISSUE_BODY+="No app demo video could be found in the Firebase Test Lab results.\n\n"
-            fi
-            
+            ISSUE_TITLE="README screenshot update failed"
+            ISSUE_BODY="The automated README assets update workflow ran, but failed to find all required screenshots.\n\n"
+            ISSUE_BODY+="### Missing Screenshots\n"
+            ISSUE_BODY+="The following screenshots could not be found in the Android emulator test results:\n"
+            # Note: The 'found_*' variables are not available here, need to check logs
+            ISSUE_BODY+="- Check workflow logs for details on which screenshots were missing.\n\n"
+
             ISSUE_BODY+="Please check the [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.\n"
             ISSUE_BODY+="This could be due to:\n"
-            ISSUE_BODY+="1. Test failures\n"
-            ISSUE_BODY+="2. Firebase Test Lab configuration issues\n"
-            ISSUE_BODY+="3. Screenshot/recording capture code not working properly\n\n"
-            ISSUE_BODY+="No changes were made to the README to avoid corrupting it with placeholder files.\n"
-            ISSUE_BODY+="PR #60 should fix these issues by improving how screenshots are captured and saved."
+            ISSUE_BODY+="1. Test failures on the emulator\n"
+            ISSUE_BODY+="2. Emulator configuration issues\n"
+            ISSUE_BODY+="3. Screenshot capture code not working properly\n\n"
+            ISSUE_BODY+="No changes were made to the README to avoid using incorrect or missing screenshots.\n"
             
             # Create the issue using the environment variables
             gh issue create --title "$ISSUE_TITLE" --body "$ISSUE_BODY"
@@ -367,18 +233,18 @@ jobs:
             exit 0
           fi
           
-          # Check if we have changes to commit
-          if [[ -z "$(git status --porcelain assets/ README.md)" ]]; then
-            echo "No changes to assets or README. Skipping PR creation."
+          # Check if we have changes to commit (only screenshots and README)
+          if [[ -z "$(git status --porcelain assets/screenshots/ README.md)" ]]; then
+            echo "No changes to screenshots or README. Skipping PR creation."
             exit 0
           fi
           
           # Create a new branch
           git checkout -b $BRANCH_NAME
           
-          # Add and commit changes
-          git add assets/ README.md
-          git commit -m "Update README screenshots and demo video [skip ci]"
+          # Add and commit changes (assets/screenshots and README.md)
+          git add assets/screenshots/ README.md
+          git commit -m "Update README screenshots [skip ci]"
           
           # Push the branch
           git push -u origin $BRANCH_NAME
@@ -391,19 +257,17 @@ jobs:
           fi
           
           # Create a PR
-          gh pr create --title "Update README screenshots and demo video" \
+          gh pr create --title "Update README screenshots" \
             --body "## Auto-generated README Assets Update
             
-            This PR updates the screenshots and demo video in the README to reflect the current state of the app.
+            This PR updates the screenshots in the README to reflect the current state of the app based on emulator tests.
             
             ### Changes:
-            - Updated app screenshots from Firebase Test Lab
-            - Updated app demo video/GIF from Firebase Test Lab recording
+            - Updated app screenshots from Android emulator tests
+            - Removed App Demo section (video generation is no longer supported)
             - Updated README references
             
             This PR was automatically generated by the update-readme-assets workflow.
-            
-            Closes #46
             " \
             --base main \
             --head $BRANCH_NAME
