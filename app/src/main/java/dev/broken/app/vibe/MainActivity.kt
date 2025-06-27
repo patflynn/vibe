@@ -1,5 +1,7 @@
 package dev.broken.app.vibe
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.Build
@@ -7,6 +9,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.VibrationEffect
 import android.os.VibratorManager
+import android.view.View
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -40,6 +43,8 @@ class MainActivity : AppCompatActivity() {
 
         setupSlider()
         setupStartButton()
+        setupTouchListener()
+        hideControls(INITIAL_HIDE_DELAY)
     }
 
     private fun setupSlider() {
@@ -196,5 +201,47 @@ class MainActivity : AppCompatActivity() {
         timer?.cancel()
         mediaPlayer?.release()
         mediaPlayer = null
+    }
+
+    private fun setupTouchListener() {
+        binding.root.setOnClickListener {
+            if (binding.controlsContainer.visibility == View.VISIBLE) {
+                hideControls()
+            } else {
+                showControls()
+            }
+        }
+    }
+
+    private fun showControls() {
+        binding.controlsContainer.apply {
+            animate()
+                .alpha(1f)
+                .setDuration(FADE_DURATION)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator) {
+                        visibility = View.VISIBLE
+                    }
+                })
+        }
+    }
+
+    private fun hideControls(delay: Long = 0) {
+        binding.controlsContainer.apply {
+            animate()
+                .alpha(0f)
+                .setStartDelay(delay)
+                .setDuration(FADE_DURATION)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        visibility = View.GONE
+                    }
+                })
+        }
+    }
+
+    companion object {
+        private const val FADE_DURATION = 300L
+        private const val INITIAL_HIDE_DELAY = 2000L
     }
 }
