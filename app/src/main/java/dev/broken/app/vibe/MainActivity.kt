@@ -1,6 +1,7 @@
 package dev.broken.app.vibe
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
@@ -25,15 +26,27 @@ class MainActivity : AppCompatActivity() {
     internal var isTimerRunning = false
     
     private var mediaPlayer: MediaPlayer? = null
+    private lateinit var sharedPreferences: SharedPreferences
     
     // Use durations from FeatureFlags
     private val durations = FeatureFlags.TIMER_INTERVALS
     private var selectedDurationIndex = 3 // Default is 20 minutes (index 3)
+    
+    companion object {
+        private const val PREFS_NAME = "vibe_preferences"
+        private const val KEY_SELECTED_DURATION_INDEX = "selected_duration_index"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        
+        // Initialize SharedPreferences
+        sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        
+        // Load saved duration preference
+        loadSavedDuration()
         
         // Ensure the screen stays on during the entire app lifecycle
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -42,12 +55,27 @@ class MainActivity : AppCompatActivity() {
         setupStartButton()
     }
 
+    private fun loadSavedDuration() {
+        selectedDurationIndex = sharedPreferences.getInt(KEY_SELECTED_DURATION_INDEX, 3)
+        // Ensure the index is within valid bounds
+        if (selectedDurationIndex < 0 || selectedDurationIndex >= durations.size) {
+            selectedDurationIndex = 3 // Default to 20 minutes if invalid
+        }
+    }
+    
+    private fun saveDuration() {
+        sharedPreferences.edit()
+            .putInt(KEY_SELECTED_DURATION_INDEX, selectedDurationIndex)
+            .apply()
+    }
+
     private fun setupSlider() {
         binding.durationSlider.apply {
             value = selectedDurationIndex.toFloat()
             addOnChangeListener { _, value, _ ->
                 selectedDurationIndex = value.toInt()
                 updateTimerDisplay(durations[selectedDurationIndex])
+                saveDuration()
             }
         }
         
