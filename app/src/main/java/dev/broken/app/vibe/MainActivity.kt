@@ -10,9 +10,12 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.VibrationEffect
 import android.os.VibratorManager
+import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import dev.broken.app.vibe.databinding.ActivityMainBinding
 import java.util.Locale
@@ -30,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var feedbackManager: FeedbackManager
     
     // Use durations from FeatureFlags
     private val durations = FeatureFlags.TIMER_INTERVALS
@@ -47,8 +51,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
-        // Initialize SharedPreferences
+        // Initialize SharedPreferences and FeedbackManager
         sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        feedbackManager = FeedbackManager(this)
         
         // Load saved duration preference
         loadSavedDuration()
@@ -241,14 +246,43 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSettingsButton() {
         binding.settingsButton.setOnClickListener {
-            // TODO: Implement settings functionality
-            // For now, just show/hide controls to demonstrate the button works
-            if (binding.controlsContainer.visibility == View.VISIBLE) {
-                hideControls()
-            } else {
-                showControls()
-            }
+            showSettingsDialog()
         }
+    }
+    
+    private fun showSettingsDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_settings, null)
+        
+        // Set up app version display
+        val appVersionText = dialogView.findViewById<TextView>(R.id.appVersionText)
+        appVersionText.text = feedbackManager.getAppVersion()
+        
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+        
+        // Set up click listeners for feedback options
+        dialogView.findViewById<View>(R.id.reviewPlayStoreOption).setOnClickListener {
+            feedbackManager.openPlayStoreReview()
+            dialog.dismiss()
+        }
+        
+        dialogView.findViewById<View>(R.id.reportGitHubIssueOption).setOnClickListener {
+            feedbackManager.openGitHubIssues()
+            dialog.dismiss()
+        }
+        
+        dialogView.findViewById<View>(R.id.sendFeedbackEmailOption).setOnClickListener {
+            feedbackManager.sendFeedbackEmail()
+            dialog.dismiss()
+        }
+        
+        dialogView.findViewById<View>(R.id.openSourceOption).setOnClickListener {
+            feedbackManager.openGitHubRepository()
+            dialog.dismiss()
+        }
+        
+        dialog.show()
     }
 
     private fun showControlsTemporarily() {

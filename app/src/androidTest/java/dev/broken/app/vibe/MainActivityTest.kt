@@ -252,6 +252,41 @@ class MainActivityTest {
         }
     }
     
+    @Test
+    fun testSettingsButtonIsDisplayedAndClickable() {
+        // Verify settings button is displayed
+        onView(withId(R.id.settingsButton))
+            .check(matches(isDisplayed()))
+            .check(matches(isClickable()))
+    }
+    
+    @Test
+    fun testSettingsDialogOpensWhenSettingsButtonClicked() {
+        // Click the settings button
+        onView(withId(R.id.settingsButton))
+            .perform(click())
+        
+        // Verify the settings dialog opens by checking for feedback options
+        onView(withText(R.string.feedback_title))
+            .check(matches(isDisplayed()))
+            
+        onView(withText(R.string.review_play_store))
+            .check(matches(isDisplayed()))
+            
+        onView(withText(R.string.file_github_issue))
+            .check(matches(isDisplayed()))
+            
+        onView(withText(R.string.send_feedback_email))
+            .check(matches(isDisplayed()))
+            
+        onView(withText(R.string.about_section))
+            .check(matches(isDisplayed()))
+            
+        // Verify app version is displayed
+        onView(withId(R.id.appVersionText))
+            .check(matches(isDisplayed()))
+    }
+    
     private fun clearPreferences() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val prefs = context.getSharedPreferences("vibe_preferences", Context.MODE_PRIVATE)
