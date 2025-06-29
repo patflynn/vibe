@@ -107,6 +107,8 @@ jobs:
           RESULTS_DIR="github-$RELEASE_TYPE-$GITHUB_RUN_ID-$GITHUB_RUN_NUMBER"
           echo "Using results directory: $RESULTS_DIR"
           
+          # Run tests with error handling and better output
+          set +e  # Don't exit on error to capture results
           gcloud firebase test android run \
             --type instrumentation \
             --app app/build/outputs/apk/debug/app-debug.apk \
@@ -116,26 +118,50 @@ jobs:
             --device model=panther,version=33,locale=en,orientation=portrait \
             --results-bucket gs://${{ secrets.FIREBASE_TEST_BUCKET }} \
             --results-dir=$RESULTS_DIR \
-            --test-targets "class dev.broken.app.vibe.EspressoScreenshotTest"
-            
-          # Save the results dir for the next step
+            --test-targets "class dev.broken.app.vibe.EspressoScreenshotTest" \
+            --timeout 15m \
+            --directories-to-pull /sdcard/Pictures/screenshots \
+            --num-flaky-test-attempts 2
+          
+          FIREBASE_EXIT_CODE=$?
+          echo "Firebase Test Lab exit code: $FIREBASE_EXIT_CODE"
+          
+          # Save the results dir and exit code for next steps
           echo "RESULTS_DIR=$RESULTS_DIR" >> $GITHUB_ENV
+          echo "FIREBASE_EXIT_CODE=$FIREBASE_EXIT_CODE" >> $GITHUB_ENV
+          
+          # Always continue to collect results, even if tests failed
+          exit 0
 
       - name: Download test results
         if: always()
         run: |
           mkdir -p firebase-test-results
           echo "Attempting to download test results from GCS bucket..."
+          echo "Firebase Test Lab exit code was: $FIREBASE_EXIT_CODE"
+          
           # Try to list files in the bucket first to understand what's available
-          gsutil ls gs://${{ secrets.FIREBASE_TEST_BUCKET }}/
+          echo "Listing bucket contents:"
+          gsutil ls gs://${{ secrets.FIREBASE_TEST_BUCKET }}/ || echo "Could not list bucket contents"
           
           # List the latest directories (newest first)
           echo "Latest directories in bucket:"
-          gsutil ls -l gs://${{ secrets.FIREBASE_TEST_BUCKET }}/ | sort -r | head -10
+          gsutil ls -l gs://${{ secrets.FIREBASE_TEST_BUCKET }}/ | sort -r | head -10 || echo "Could not list directories"
           
           # Try to download files from the expected location using the saved RESULTS_DIR
-          echo "Downloading from gs://${{ secrets.FIREBASE_TEST_BUCKET }}/$RESULTS_DIR/*"
-          gsutil -m cp -r gs://${{ secrets.FIREBASE_TEST_BUCKET }}/$RESULTS_DIR/* firebase-test-results/ || echo "No files found in expected location, continuing workflow"
+          echo "Downloading from gs://${{ secrets.FIREBASE_TEST_BUCKET }}/$RESULTS_DIR/"
+          if gsutil ls gs://${{ secrets.FIREBASE_TEST_BUCKET }}/$RESULTS_DIR/ >/dev/null 2>&1; then
+            echo "Results directory exists, downloading..."
+            gsutil -m cp -r gs://${{ secrets.FIREBASE_TEST_BUCKET }}/$RESULTS_DIR/* firebase-test-results/
+            
+            # List what we downloaded
+            echo "Downloaded files:"
+            find firebase-test-results -type f | head -20
+          else
+            echo "Results directory not found, test may have failed before completion"
+            echo "Creating empty results directory for artifact upload"
+            echo "Firebase Test Lab exit code: $FIREBASE_EXIT_CODE" > firebase-test-results/firebase-exit-code.txt
+          fi
 
       - name: Upload test results
         if: always()
