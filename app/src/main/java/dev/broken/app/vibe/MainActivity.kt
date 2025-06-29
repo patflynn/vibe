@@ -1,5 +1,7 @@
 package dev.broken.app.vibe
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.content.SharedPreferences
 import android.media.MediaPlayer
@@ -8,6 +10,7 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.VibrationEffect
 import android.os.VibratorManager
+import android.view.View
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -35,6 +38,8 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val PREFS_NAME = "vibe_preferences"
         private const val KEY_SELECTED_DURATION_INDEX = "selected_duration_index"
+        private const val FADE_DURATION = 300L
+        private const val INITIAL_HIDE_DELAY = 3000L
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +58,11 @@ class MainActivity : AppCompatActivity() {
 
         setupSlider()
         setupStartButton()
+        setupTouchListener()
+        setupSettingsButton()
+        
+        // Show controls briefly at startup, then hide them
+        showControlsTemporarily()
     }
 
     private fun loadSavedDuration() {
@@ -216,6 +226,84 @@ class MainActivity : AppCompatActivity() {
                     android.util.Log.d("VibeApp", "Device vibration triggered (legacy)")
                 }
             }
+        }
+    }
+
+    private fun setupTouchListener() {
+        binding.root.setOnClickListener {
+            if (binding.controlsContainer.visibility == View.VISIBLE) {
+                hideControls()
+            } else {
+                showControls()
+            }
+        }
+    }
+
+    private fun setupSettingsButton() {
+        binding.settingsButton.setOnClickListener {
+            // TODO: Implement settings functionality
+            // For now, just show/hide controls to demonstrate the button works
+            if (binding.controlsContainer.visibility == View.VISIBLE) {
+                hideControls()
+            } else {
+                showControls()
+            }
+        }
+    }
+
+    private fun showControlsTemporarily() {
+        // Show controls at startup, then hide after delay
+        showControls()
+        hideControls(INITIAL_HIDE_DELAY)
+    }
+
+    private fun showControls() {
+        binding.controlsContainer.apply {
+            animate()
+                .alpha(1f)
+                .setDuration(FADE_DURATION)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator) {
+                        visibility = View.VISIBLE
+                    }
+                })
+        }
+        
+        binding.settingsButton.apply {
+            animate()
+                .alpha(1f)
+                .setDuration(FADE_DURATION)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator) {
+                        visibility = View.VISIBLE
+                    }
+                })
+        }
+    }
+
+    private fun hideControls(delay: Long = 0) {
+        binding.controlsContainer.apply {
+            animate()
+                .alpha(0f)
+                .setStartDelay(delay)
+                .setDuration(FADE_DURATION)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        visibility = View.GONE
+                    }
+                })
+        }
+        
+        binding.settingsButton.apply {
+            animate()
+                .alpha(0f)
+                .setStartDelay(delay)
+                .setDuration(FADE_DURATION)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        visibility = View.GONE
+                    }
+                })
         }
     }
 
