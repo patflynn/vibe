@@ -6,4 +6,28 @@
     <string name="meditation_complete">Meditation Complete</string>
     <string name="_00_00">00:00</string>
     <string name="settings">Settings</string>
+    
+    <!-- Feedback and Settings -->
+    <string name="feedback_title">Feedback &amp; Support</string>
+    <string name="review_play_store">Review on Play Store</string>
+    <string name="review_play_store_description">Help others discover Vibe by leaving a review</string>
+    <string name="file_github_issue">Report Issue on GitHub</string>
+    <string name="file_github_issue_description">Report bugs or request features</string>
+    <string name="send_feedback_email">Send Feedback Email</string>
+    <string name="send_feedback_email_description">Share your thoughts directly with us</string>
+    <string name="about_section">About</string>
+    <string name="app_version">App Version</string>
+    <string name="open_source_info">Open Source Project</string>
+    <string name="open_source_description">View source code on GitHub</string>
+    
+    <!-- Email feedback -->
+    <string name="feedback_email_subject">Vibe App Feedback</string>
+    <string name="feedback_email_body">Hi Vibe team,\n\nI have some feedback about the app:\n\n[Please share your thoughts here]\n\nApp Version: %1$s\nDevice: %2$s\nAndroid Version: %3$s\n\nThanks!</string>
+    <string name="email_chooser_title">Send feedback via…</string>
+    
+    <!-- Error messages -->
+    <string name="no_play_store_app">Google Play Store app not found</string>
+    <string name="no_email_app">No email app found</string>
+    <string name="no_browser_app">No web browser found</string>
+    <string name="error_opening_link">Unable to open link</string>
 </resources>
