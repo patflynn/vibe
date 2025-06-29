@@ -32,17 +32,17 @@ jobs:
   security-check:
     uses: ./.github/workflows/ci-security-check.yml
   
-  # Run Firebase Test Lab tests before publishing
-  firebase-tests:
+  # Run instrumentation tests before publishing
+  instrumentation-tests: # Renamed job
     needs: security-check
     if: needs.security-check.outputs.should-run == 'true'
-    uses: ./.github/workflows/firebase-test-lab.yml
+    uses: ./.github/workflows/android-instrumentation-tests.yml # Updated path
     with:
       releaseType: 'testing'
     secrets: inherit
   
   publish:
-    needs: [security-check, firebase-tests]
+    needs: [security-check, instrumentation-tests] # Updated dependency
     # Only run if security check passes and tests pass
     if: needs.security-check.outputs.should-run == 'true'
     runs-on: ubuntu-latest

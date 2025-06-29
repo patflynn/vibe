@@ -1,0 +1,88 @@
+name: Android Instrumentation Tests
+
+on:
+  # Only run during release preparation (manual trigger)
+  workflow_dispatch:
+    inputs:
+      releaseType:
+        description: 'Type of release being prepared'
+        required: true
+        default: 'testing'
+        type: choice
+        options:
+          - testing
+          - production
+  
+  # Allow calling from other workflows
+  workflow_call:
+    inputs:
+      releaseType:
+        description: 'Type of release being prepared'
+        type: string
+        default: 'testing'
+        required: true
+
+jobs:
+  # Call the reusable security check workflow with file path checking enabled
+  security-check:
+    uses: ./.github/workflows/ci-security-check.yml
+    with:
+      check-file-changes: true
+      file-patterns: '\.kt$|\.xml$|\.gradle$|\.java$|\.properties$'
+  
+  # Call the reusable notification workflow if CI should be skipped due to security check
+  notify-security-skip:
+    needs: security-check
+    if: needs.security-check.outputs.should-run == 'false'
+    uses: ./.github/workflows/ci-skipped-notification.yml
+    with:
+      workflow-name: 'Firebase Test Lab'
+      security-check: true
+  
+  # Call the reusable notification workflow if CI should be skipped due to no code changes
+  notify-no-code-changes:
+    needs: security-check
+    if: needs.security-check.outputs.should-run == 'true' && needs.security-check.outputs.is-code-change == 'false'
+    uses: ./.github/workflows/ci-skipped-notification.yml
+    with:
+      workflow-name: 'Firebase Test Lab'
+      security-check: false
+      code-change-check: true
+  
+  # Main test job, depends on security check
+  instrumentation-test:
+    needs: security-check
+    # Only run if security check passes (no need to check code changes for releases)
+    if: needs.security-check.outputs.should-run == 'true'
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TYPE: ${{ inputs.releaseType }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build debug APK and test APK
+        run: ./gradlew assembleDebug assembleDebugAndroidTest
+
+      - name: Run instrumentation tests on Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30 # Match one of the FTL API levels previously used
+          script: ./gradlew connectedCheck # Command to run tests
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: emulator-test-results # Rename artifact for clarity
+          path: app/build/outputs/androidTest-results/connected/ # Standard path for connectedCheck results
+          if-no-files-found: warn
