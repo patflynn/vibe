@@ -5,4 +5,5 @@
     <string name="duration_label">Meditation Duration</string>
     <string name="meditation_complete">Meditation Complete</string>
     <string name="_00_00">00:00</string>
+    <string name="settings">Settings</string>
 </resources>
