@@ -270,6 +270,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
+    
     private fun showSettingsDialog() {
         try {
             val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_settings, null)
