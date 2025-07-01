@@ -251,38 +251,44 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun showSettingsDialog() {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_settings, null)
-        
-        // Set up app version display
-        val appVersionText = dialogView.findViewById<TextView>(R.id.appVersionText)
-        appVersionText.text = feedbackManager.getAppVersion()
-        
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .create()
-        
-        // Set up click listeners for feedback options
-        dialogView.findViewById<View>(R.id.reviewPlayStoreOption).setOnClickListener {
-            feedbackManager.openPlayStoreReview()
-            dialog.dismiss()
+        try {
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_settings, null)
+            
+            // Set up app version display
+            val appVersionText = dialogView.findViewById<TextView>(R.id.appVersionText)
+            appVersionText.text = feedbackManager.getAppVersion()
+            
+            val dialog = AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create()
+            
+            // Set up click listeners for feedback options
+            dialogView.findViewById<View>(R.id.reviewPlayStoreOption)?.setOnClickListener {
+                feedbackManager.openPlayStoreReview()
+                dialog.dismiss()
+            }
+            
+            dialogView.findViewById<View>(R.id.reportGitHubIssueOption)?.setOnClickListener {
+                feedbackManager.openGitHubIssues()
+                dialog.dismiss()
+            }
+            
+            dialogView.findViewById<View>(R.id.sendFeedbackEmailOption)?.setOnClickListener {
+                feedbackManager.sendFeedbackEmail()
+                dialog.dismiss()
+            }
+            
+            dialogView.findViewById<View>(R.id.openSourceOption)?.setOnClickListener {
+                feedbackManager.openGitHubRepository()
+                dialog.dismiss()
+            }
+            
+            dialog.show()
+        } catch (e: Exception) {
+            // Log the error and show a simple message instead of crashing
+            android.util.Log.e("VibeApp", "Error showing settings dialog", e)
+            android.widget.Toast.makeText(this, "Settings temporarily unavailable", android.widget.Toast.LENGTH_SHORT).show()
         }
-        
-        dialogView.findViewById<View>(R.id.reportGitHubIssueOption).setOnClickListener {
-            feedbackManager.openGitHubIssues()
-            dialog.dismiss()
-        }
-        
-        dialogView.findViewById<View>(R.id.sendFeedbackEmailOption).setOnClickListener {
-            feedbackManager.sendFeedbackEmail()
-            dialog.dismiss()
-        }
-        
-        dialogView.findViewById<View>(R.id.openSourceOption).setOnClickListener {
-            feedbackManager.openGitHubRepository()
-            dialog.dismiss()
-        }
-        
-        dialog.show()
     }
 
     private fun showControlsTemporarily() {
