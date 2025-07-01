@@ -284,11 +284,36 @@ class MainActivity : AppCompatActivity() {
             }
             
             dialog.show()
-        } catch (e: Exception) {
-            // Log the error and show a simple message instead of crashing
-            android.util.Log.e("VibeApp", "Error showing settings dialog", e)
-            android.widget.Toast.makeText(this, "Settings temporarily unavailable", android.widget.Toast.LENGTH_SHORT).show()
+        } catch (e: android.view.InflateException) {
+            // Layout inflation failed - likely resource/theme issue
+            android.util.Log.e("VibeApp", "Failed to inflate settings dialog layout", e)
+            showFallbackSettingsDialog()
+        } catch (e: android.content.res.Resources.NotFoundException) {
+            // Missing resource - likely theme/color issue
+            android.util.Log.e("VibeApp", "Resource not found for settings dialog", e)
+            showFallbackSettingsDialog()
+        } catch (e: IllegalStateException) {
+            // Activity state issues (like activity destroyed)
+            android.util.Log.w("VibeApp", "Cannot show dialog - activity state issue", e)
+            // Don't show toast if activity is destroyed
         }
+    }
+    
+    private fun showFallbackSettingsDialog() {
+        // Simple fallback dialog without custom layout
+        AlertDialog.Builder(this)
+            .setTitle("Settings")
+            .setMessage("Feedback options:\n\n• Rate us on Play Store\n• Report issues on GitHub\n• Send email feedback")
+            .setPositiveButton("Play Store") { _, _ -> 
+                feedbackManager.openPlayStoreReview()
+            }
+            .setNeutralButton("GitHub") { _, _ ->
+                feedbackManager.openGitHubIssues()
+            }
+            .setNegativeButton("Email") { _, _ ->
+                feedbackManager.sendFeedbackEmail()
+            }
+            .show()
     }
 
     private fun showControlsTemporarily() {
