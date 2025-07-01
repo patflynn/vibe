@@ -13,6 +13,9 @@ import android.os.VibratorManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowCompat
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -50,6 +53,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Enable edge-to-edge display for proper system bar handling
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
@@ -68,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         setupTouchListener()
         setupSettingsButton()
         setupTimerLongPress()
+        setupSystemWindowInsets()
         
         // Show controls briefly at startup, then hide them
         showControlsTemporarily()
@@ -267,6 +275,25 @@ class MainActivity : AppCompatActivity() {
     private fun setupSettingsButton() {
         binding.settingsButton.setOnClickListener {
             showSettingsDialog()
+        }
+    }
+    
+    private fun setupSystemWindowInsets() {
+        // Handle system window insets to prevent overlap with status bar
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            
+            // Apply top inset to settings button to avoid status bar overlap
+            val settingsButton = binding.settingsButton
+            val layoutParams = settingsButton.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+            layoutParams.topMargin = insets.top + 16 // 16dp base margin + status bar height
+            settingsButton.layoutParams = layoutParams
+            
+            if (FeatureFlags.LOG_TIMER_EVENTS) {
+                android.util.Log.d("VibeApp", "Applied window insets - top: ${insets.top}dp")
+            }
+            
+            windowInsets
         }
     }
     
