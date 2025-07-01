@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity() {
     
     // Changed to internal for testing access
     internal var isTimerRunning = false
+    private var isPaused = false
+    private var remainingTimeMillis: Long = 0L
     
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var sharedPreferences: SharedPreferences
@@ -65,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         setupStartButton()
         setupTouchListener()
         setupSettingsButton()
+        setupTimerLongPress()
         
         // Show controls briefly at startup, then hide them
         showControlsTemporarily()
@@ -109,18 +112,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startTimer() {
-        // Play start sound
-        playBellSound()
+        // Play start sound only when starting fresh (not resuming)
+        if (!isPaused) {
+            playBellSound()
+        }
         
-        val durationMinutes = durations[selectedDurationIndex]
-        var durationMillis = FeatureFlags.getDurationInMillis(durationMinutes)
+        // Use remaining time if resuming, otherwise use full duration
+        val durationMillis = if (isPaused && remainingTimeMillis > 0) {
+            remainingTimeMillis
+        } else {
+            val durationMinutes = durations[selectedDurationIndex]
+            FeatureFlags.getDurationInMillis(durationMinutes)
+        }
         
         if (FeatureFlags.LOG_TIMER_EVENTS) {
-            android.util.Log.d("VibeApp", "Starting timer for ${durationMillis}ms")
+            val action = if (isPaused) "Resuming" else "Starting"
+            android.util.Log.d("VibeApp", "$action timer for ${durationMillis}ms")
         }
         
         timer = object : CountDownTimer(durationMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
+                remainingTimeMillis = millisUntilFinished
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)
                 val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60
                 binding.timerTextView.text = String.format(Locale.getDefault(),"%02d:%02d", minutes, seconds)
@@ -132,7 +144,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 binding.timerTextView.text = getString(R.string._00_00)
-                resetTimerUI()
+                resetTimerState()
                 // Play end sound
                 playBellSound()
                 
@@ -143,17 +155,25 @@ class MainActivity : AppCompatActivity() {
         }.start()
         
         isTimerRunning = true
+        isPaused = false
         updateTimerUI()
     }
 
     private fun pauseTimer() {
         timer?.cancel()
         isTimerRunning = false
+        isPaused = true
         updateTimerUI()
+        
+        if (FeatureFlags.LOG_TIMER_EVENTS) {
+            android.util.Log.d("VibeApp", "Timer paused with ${remainingTimeMillis}ms remaining")
+        }
     }
 
-    private fun resetTimerUI() {
+    private fun resetTimerState() {
         isTimerRunning = false
+        isPaused = false
+        remainingTimeMillis = 0L
         updateTimerUI()
         updateTimerDisplay(durations[selectedDurationIndex])
     }
@@ -165,8 +185,8 @@ class MainActivity : AppCompatActivity() {
             binding.durationSlider.isEnabled = false
         } else {
             binding.startButton.setImageResource(R.drawable.ic_play)
-            binding.startButton.contentDescription = getString(R.string.start_meditation)
-            binding.durationSlider.isEnabled = true
+            binding.startButton.contentDescription = if (isPaused) getString(R.string.resume_meditation) else getString(R.string.start_meditation)
+            binding.durationSlider.isEnabled = !isPaused
         }
     }
     
@@ -369,6 +389,23 @@ class MainActivity : AppCompatActivity() {
                         visibility = View.GONE
                     }
                 })
+        }
+    }
+    
+    private fun setupTimerLongPress() {
+        binding.timerTextView.setOnLongClickListener {
+            if (isPaused || !isTimerRunning) {
+                // Reset the timer when long-pressed during pause or when stopped
+                resetTimerState()
+                android.widget.Toast.makeText(this, "Timer reset", android.widget.Toast.LENGTH_SHORT).show()
+                
+                if (FeatureFlags.LOG_TIMER_EVENTS) {
+                    android.util.Log.d("VibeApp", "Timer manually reset via long press")
+                }
+                true
+            } else {
+                false
+            }
         }
     }
 
