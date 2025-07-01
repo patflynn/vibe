@@ -2,6 +2,7 @@
     <string name="app_name">Vibe</string>
     <string name="start_meditation">Start Meditation</string>
     <string name="pause_meditation">Pause Meditation</string>
+    <string name="resume_meditation">Resume Meditation</string>
     <string name="duration_label">Meditation Duration</string>
     <string name="meditation_complete">Meditation Complete</string>
     <string name="_00_00">00:00</string>
