@@ -15,8 +15,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/feedback_title"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            android:textColor="?attr/colorPrimary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_blue_dark"
             android:layout_marginBottom="16dp" />
 
         <!-- Review on Play Store -->
@@ -35,15 +36,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/review_play_store"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
-                android:textColor="?attr/colorOnSurface" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/review_play_store_description"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
                 android:layout_marginTop="4dp" />
 
         </LinearLayout>
@@ -64,15 +66,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/file_github_issue"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
-                android:textColor="?attr/colorOnSurface" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/file_github_issue_description"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
                 android:layout_marginTop="4dp" />
 
         </LinearLayout>
@@ -93,15 +96,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/send_feedback_email"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
-                android:textColor="?attr/colorOnSurface" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/send_feedback_email_description"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
                 android:layout_marginTop="4dp" />
 
         </LinearLayout>
@@ -111,8 +115,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/about_section"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            android:textColor="?attr/colorPrimary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_blue_dark"
             android:layout_marginBottom="16dp" />
 
         <!-- App Version -->
@@ -127,15 +132,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/app_version"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
-                android:textColor="?attr/colorOnSurface" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
 
             <TextView
                 android:id="@+id/appVersionText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
                 android:layout_marginTop="4dp" />
 
         </LinearLayout>
@@ -155,15 +161,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/open_source_info"
-                android:textAppearance="?attr/textAppearanceSubtitle1"
-                android:textColor="?attr/colorOnSurface" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/open_source_description"
-                android:textAppearance="?attr/textAppearanceBody2"
-                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
                 android:layout_marginTop="4dp" />
 
         </LinearLayout>
