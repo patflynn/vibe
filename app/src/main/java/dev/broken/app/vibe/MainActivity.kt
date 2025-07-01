@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var timer: CountDownTimer? = null
+    private var remainingTimeMillis: Long = 0 // Added to store remaining time
     
     // Changed to internal for testing access
     internal var isTimerRunning = false
@@ -87,10 +88,16 @@ class MainActivity : AppCompatActivity() {
     private fun setupSlider() {
         binding.durationSlider.apply {
             value = selectedDurationIndex.toFloat()
-            addOnChangeListener { _, value, _ ->
-                selectedDurationIndex = value.toInt()
-                updateTimerDisplay(durations[selectedDurationIndex])
-                saveDuration()
+            addOnChangeListener { _, value, fromUser -> // 'fromUser' can be useful
+                if (fromUser) { // Only act if the change is from user interaction
+                    selectedDurationIndex = value.toInt()
+                    updateTimerDisplay(durations[selectedDurationIndex])
+                    saveDuration()
+                    if (!isTimerRunning) { // If timer is not running (paused or stopped)
+                        remainingTimeMillis = 0 // Reset remaining time
+                        // updateTimerDisplay is already called, which shows the full new duration
+                    }
+                }
             }
         }
         
@@ -112,15 +119,20 @@ class MainActivity : AppCompatActivity() {
         // Play start sound
         playBellSound()
         
-        val durationMinutes = durations[selectedDurationIndex]
-        var durationMillis = FeatureFlags.getDurationInMillis(durationMinutes)
-        
-        if (FeatureFlags.LOG_TIMER_EVENTS) {
-            android.util.Log.d("VibeApp", "Starting timer for ${durationMillis}ms")
+        val durationToUse = if (remainingTimeMillis > 0) {
+            remainingTimeMillis
+        } else {
+            val durationMinutes = durations[selectedDurationIndex]
+            FeatureFlags.getDurationInMillis(durationMinutes)
         }
         
-        timer = object : CountDownTimer(durationMillis, 1000) {
+        if (FeatureFlags.LOG_TIMER_EVENTS) {
+            android.util.Log.d("VibeApp", "Starting timer for ${durationToUse}ms")
+        }
+        
+        timer = object : CountDownTimer(durationToUse, 1000) {
             override fun onTick(millisUntilFinished: Long) {
+                remainingTimeMillis = millisUntilFinished // Store remaining time on each tick
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished)
                 val seconds = TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60
                 binding.timerTextView.text = String.format(Locale.getDefault(),"%02d:%02d", minutes, seconds)
@@ -132,6 +144,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 binding.timerTextView.text = getString(R.string._00_00)
+                remainingTimeMillis = 0 // Reset remaining time on finish
                 resetTimerUI()
                 // Play end sound
                 playBellSound()
@@ -147,13 +160,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun pauseTimer() {
-        timer?.cancel()
+        timer?.cancel() // remainingTimeMillis is already updated in onTick
         isTimerRunning = false
         updateTimerUI()
     }
 
     private fun resetTimerUI() {
         isTimerRunning = false
+        remainingTimeMillis = 0 // Reset remaining time
         updateTimerUI()
         updateTimerDisplay(durations[selectedDurationIndex])
     }
