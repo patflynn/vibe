@@ -70,6 +70,9 @@ jobs:
      
     - name: Build Debug APK
       run: ./gradlew assembleDebug
+
+    - name: Build Android Test APK
+      run: ./gradlew assembleDebugAndroidTest
     
     - name: Generate version name
       id: version
