@@ -338,6 +338,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showControlsTemporarily() {
+        // Ensure controls start in the correct initial state for animation
+        binding.controlsContainer.apply {
+            alpha = 0f
+            visibility = View.GONE
+        }
+        binding.settingsButton.apply {
+            alpha = 0f
+            visibility = View.GONE
+        }
+        
         // Show controls at startup, then hide after delay
         showControls()
         hideControls(INITIAL_HIDE_DELAY)
@@ -345,8 +355,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun showControls() {
         binding.controlsContainer.apply {
+            clearAnimation()
             animate()
                 .alpha(1f)
+                .setStartDelay(0)
                 .setDuration(FADE_DURATION)
                 .setListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationStart(animation: Animator) {
@@ -356,8 +368,10 @@ class MainActivity : AppCompatActivity() {
         }
         
         binding.settingsButton.apply {
+            clearAnimation()
             animate()
                 .alpha(1f)
+                .setStartDelay(0)
                 .setDuration(FADE_DURATION)
                 .setListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationStart(animation: Animator) {
@@ -369,6 +383,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun hideControls(delay: Long = 0) {
         binding.controlsContainer.apply {
+            clearAnimation()
             animate()
                 .alpha(0f)
                 .setStartDelay(delay)
@@ -381,6 +396,7 @@ class MainActivity : AppCompatActivity() {
         }
         
         binding.settingsButton.apply {
+            clearAnimation()
             animate()
                 .alpha(0f)
                 .setStartDelay(delay)
