@@ -189,7 +189,7 @@ class MainActivity : AppCompatActivity() {
             binding.startButton.setImageResource(R.drawable.ic_play)
             binding.startButton.contentDescription = if (isPaused) getString(R.string.resume_meditation) else getString(R.string.start_meditation)
             binding.durationSlider.isEnabled = !isPaused
-            // Show reset button when timer is paused or stopped
+            // Show reset button only when timer is paused (as sibling of play button)
             binding.resetButton.visibility = if (isPaused) View.VISIBLE else View.GONE
         }
     }
@@ -362,11 +362,6 @@ class MainActivity : AppCompatActivity() {
             alpha = 0f
             visibility = View.GONE
         }
-        // Reset button starts hidden (will be shown based on timer state)
-        binding.resetButton.apply {
-            alpha = 0f
-            visibility = View.GONE
-        }
         
         // Show controls at startup, then hide after delay
         showControls()
@@ -399,22 +394,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 })
         }
-        
-        // Animate reset button only when it should be visible (when paused)
-        if (isPaused) {
-            binding.resetButton.apply {
-                clearAnimation()
-                animate()
-                    .alpha(1f)
-                    .setStartDelay(0)
-                    .setDuration(FADE_DURATION)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationStart(animation: Animator) {
-                            visibility = View.VISIBLE
-                        }
-                    })
-            }
-        }
     }
 
     private fun hideControls(delay: Long = 0) {
@@ -442,22 +421,6 @@ class MainActivity : AppCompatActivity() {
                         visibility = View.GONE
                     }
                 })
-        }
-        
-        // Animate reset button hide if it's currently visible
-        if (binding.resetButton.visibility == View.VISIBLE) {
-            binding.resetButton.apply {
-                clearAnimation()
-                animate()
-                    .alpha(0f)
-                    .setStartDelay(delay)
-                    .setDuration(FADE_DURATION)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            visibility = View.GONE
-                        }
-                    })
-            }
         }
     }
     

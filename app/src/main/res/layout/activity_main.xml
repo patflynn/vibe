@@ -34,6 +34,22 @@
         app:layout_constraintTop_toBottomOf="@+id/timerTextView"
         app:srcCompat="@drawable/ic_play" />
 
+    <!-- Reset button as sibling of play/pause button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/resetButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:clickable="true"
+        android:contentDescription="@string/reset_timer"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/startButton"
+        app:layout_constraintStart_toEndOf="@+id/startButton"
+        app:layout_constraintTop_toTopOf="@+id/startButton"
+        app:srcCompat="@drawable/ic_reset"
+        app:fabSize="mini" />
+
     <!-- Controls container that can be hidden/shown -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/controlsContainer"
@@ -66,24 +82,6 @@
             android:valueFrom="0"
             android:valueTo="6"
             app:layout_constraintTop_toBottomOf="@+id/durationLabel" />
-
-        <!-- Reset button, only visible when timer is paused or stopped -->
-        <Button
-            android:id="@+id/resetButton"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/reset_button_background"
-            android:contentDescription="@string/reset_timer"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:text="@string/reset_timer"
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/durationSlider" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
