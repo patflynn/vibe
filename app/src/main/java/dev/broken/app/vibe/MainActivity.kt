@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         setupTouchListener()
         setupSettingsButton()
         setupTimerLongPress()
+        setupResetButton()
         
         // Show controls briefly at startup, then hide them
         showControlsTemporarily()
@@ -183,10 +184,13 @@ class MainActivity : AppCompatActivity() {
             binding.startButton.setImageResource(R.drawable.ic_pause)
             binding.startButton.contentDescription = getString(R.string.pause_meditation)
             binding.durationSlider.isEnabled = false
+            binding.resetButton.visibility = View.GONE
         } else {
             binding.startButton.setImageResource(R.drawable.ic_play)
             binding.startButton.contentDescription = if (isPaused) getString(R.string.resume_meditation) else getString(R.string.start_meditation)
             binding.durationSlider.isEnabled = !isPaused
+            // Show reset button only when timer is paused (as sibling of play button)
+            binding.resetButton.visibility = if (isPaused) View.VISIBLE else View.GONE
         }
     }
     
@@ -267,6 +271,17 @@ class MainActivity : AppCompatActivity() {
     private fun setupSettingsButton() {
         binding.settingsButton.setOnClickListener {
             showSettingsDialog()
+        }
+    }
+    
+    private fun setupResetButton() {
+        binding.resetButton.setOnClickListener {
+            resetTimerState()
+            android.widget.Toast.makeText(this, "Timer reset", android.widget.Toast.LENGTH_SHORT).show()
+            
+            if (FeatureFlags.LOG_TIMER_EVENTS) {
+                android.util.Log.d("VibeApp", "Timer reset via reset button")
+            }
         }
     }
     
