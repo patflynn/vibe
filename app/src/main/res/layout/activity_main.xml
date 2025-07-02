@@ -71,9 +71,10 @@
         <Button
             android:id="@+id/resetButton"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
+            android:layout_height="48dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/reset_button_background"
+            android:contentDescription="@string/reset_timer"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:text="@string/reset_timer"

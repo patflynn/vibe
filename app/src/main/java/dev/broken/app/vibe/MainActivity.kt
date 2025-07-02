@@ -399,6 +399,22 @@ class MainActivity : AppCompatActivity() {
                     }
                 })
         }
+        
+        // Animate reset button only when it should be visible (when paused)
+        if (isPaused) {
+            binding.resetButton.apply {
+                clearAnimation()
+                animate()
+                    .alpha(1f)
+                    .setStartDelay(0)
+                    .setDuration(FADE_DURATION)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationStart(animation: Animator) {
+                            visibility = View.VISIBLE
+                        }
+                    })
+            }
+        }
     }
 
     private fun hideControls(delay: Long = 0) {
@@ -426,6 +442,22 @@ class MainActivity : AppCompatActivity() {
                         visibility = View.GONE
                     }
                 })
+        }
+        
+        // Animate reset button hide if it's currently visible
+        if (binding.resetButton.visibility == View.VISIBLE) {
+            binding.resetButton.apply {
+                clearAnimation()
+                animate()
+                    .alpha(0f)
+                    .setStartDelay(delay)
+                    .setDuration(FADE_DURATION)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator) {
+                            visibility = View.GONE
+                        }
+                    })
+            }
         }
     }
     
