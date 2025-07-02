@@ -20,14 +20,22 @@
 - **Architecture**: Follow single-responsibility principle with clean separation of concerns
 
 ## Workflow Guidelines
-- Always create changes through a PR flow, even without being explicitly asked
+- **NEVER push directly to main** - Always create changes through a PR flow, even for small fixes
 - Always sync with upstream main before starting work on a new PR (`git fetch origin main && git merge origin/main`)
 - Always check PR status before pushing additional changes (`git fetch && git branch -vv`)
-- Create feature branches with descriptive names for all changes
+- Create feature branches with descriptive names for all changes (e.g., `fix/androidtest-compilation-error`)
 - Submit pull requests for review before merging to main
+- **Even urgent fixes must go through PR process** - respect branch protection rules
 - Make sure that you keep separate issues/features in separate PRs
 - Make sure to update issues with analysis, design considerations, and plan of action
 - Prefer using local testing using the android SDK device manager to save time and money. Only use Firebase when you need to
+
+## Learning & Improvement Guidelines
+- **Regular reflection**: At the end of each PR, take stock of what has been learned in the session
+- **Suggest new directives**: Based on mistakes, patterns, or improvements discovered, propose updates to CLAUDE.md
+- **Document patterns**: When encountering repeated issues or solutions, suggest adding them to guidelines
+- **Workflow improvements**: If better development practices are discovered, propose incorporating them
+- **Error prevention**: After any mistake (like direct main pushes), suggest preventive measures for the future
 
 ## Visual Verification Workflow
 When making UI changes, always verify visually before creating PR:
