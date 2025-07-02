@@ -67,6 +67,23 @@
             android:valueTo="6"
             app:layout_constraintTop_toBottomOf="@+id/durationLabel" />
 
+        <!-- Reset button, only visible when timer is paused or stopped -->
+        <Button
+            android:id="@+id/resetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/reset_button_background"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:text="@string/reset_timer"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/durationSlider" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Settings button in top-right corner -->
