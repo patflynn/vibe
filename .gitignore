@@ -23,6 +23,9 @@ hs_err_pid*.log
 *.hprof
 captures/
 
+# Visual verification screenshots (development artifacts)
+screenshots/
+
 #User settings
 .aiexclude/
 .settings/
