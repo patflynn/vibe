@@ -64,7 +64,6 @@ class EspressoScreenshotTest {
         try {
             val screenshot = Screenshot.capture()
                 .setName("${fileName}_${timestamp}")
-                .setFormat(Screenshot.CompressFormat.PNG)
                 .bitmap
             
             Log.i(TAG, "Screenshot captured successfully: ${fileName}_${timestamp}")
