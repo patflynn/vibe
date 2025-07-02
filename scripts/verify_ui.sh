@@ -8,6 +8,19 @@ set -e
 
 echo "🔧 Building and verifying UI changes..."
 
+# Setup Android SDK environment if not already set
+if [ -z "$ANDROID_HOME" ]; then
+    if [ -d "/home/sid/sdks/android" ]; then
+        export ANDROID_HOME=/home/sid/sdks/android
+        echo "📱 Auto-detected Android SDK at: $ANDROID_HOME"
+    fi
+fi
+
+# Ensure Android tools are in PATH
+if [ -n "$ANDROID_HOME" ]; then
+    export PATH=$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin
+fi
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
