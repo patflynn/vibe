@@ -36,3 +36,4 @@ gradle-wrapper.properties
 /app/release/
 /keys/
 .aider*
+videos/
