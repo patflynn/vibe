@@ -30,9 +30,27 @@ Each merge to the main branch automatically creates a new release with a timesta
 
 ## Development Setup
 
+### Standard Setup
 1. Clone the repository
 2. Open the project in Android Studio
 3. Build and run on your device or emulator
+
+### Nix Setup (Recommended for NixOS users)
+This project includes a `flake.nix` for a reproducible development environment.
+
+1. Ensure you have Nix installed with Flakes enabled.
+2. Run `nix develop` or use `direnv allow`.
+3. Use the `gradlew` command (provided as a shell function) which includes necessary fixes for NixOS:
+   ```bash
+   gradlew assembleDebug
+   ```
+
+### Google Services Configuration
+The project requires a `google-services.json` file in the `app/` directory to build. 
+For local development, a dummy file is provided, but for full Firebase functionality (Analytics, etc.):
+1. Create a project in the [Firebase Console](https://console.firebase.google.com/).
+2. Add an Android app with package name `dev.broken.app.vibe`.
+3. Download the `google-services.json` and place it in the `app/` directory.
 
 ## Building the Project
 

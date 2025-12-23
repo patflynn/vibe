@@ -51,6 +51,12 @@
             export ANDROID_SDK_ROOT=${androidSdk}/libexec/android-sdk
             export ANDROID_HOME=$ANDROID_SDK_ROOT
             export JAVA_HOME=${pkgs.jdk17.home}
+            
+            # Fix AAPT2 on NixOS
+            gradlew() {
+              ./gradlew -Pandroid.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/35.0.0/aapt2 "$@"
+            }
+
             echo "Vibe development environment loaded!"
             echo "Android SDK: $ANDROID_HOME"
             echo "Java: $(java -version 2>&1 | head -n 1)"
